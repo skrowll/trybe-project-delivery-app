@@ -1,5 +1,9 @@
 const errorHandler = (error, _req, res, _next) => {
-  if (error.status) {
+  if (error.message === 'Invalid email') {
+    return res.status(404).json({ message: error.message });
+  }
+
+  if (error.status === 400) {
     return res.status(error.status).json({ message: error.message });
   }
 

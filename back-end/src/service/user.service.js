@@ -5,11 +5,7 @@ const { configAuthorization } = require('../utils/Auth');
 const loginUser = async ({ password, email }) => {
   const user = await User.findOne({ where: { email } });
 
-  if (!user) {
-    const error = new Error('Invalid email');
-    error.status = 404;
-    throw error;
-  }
+  if (!user) throw new Error('Invalid email');
 
   const validPass = md5(password) === user.password;
 
@@ -18,7 +14,7 @@ const loginUser = async ({ password, email }) => {
     error.status = 400;
     throw error;
   }
-
+  
   const token = configAuthorization.signAuth(user);
 
   if (!validPass) {
@@ -27,12 +23,7 @@ const loginUser = async ({ password, email }) => {
     throw error;
   }
 
-  return {
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    token,
-  };
+  return { name: user.name, email: user.email, role: user.role, token };
 };
 
 module.exports = {

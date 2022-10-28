@@ -1,14 +1,15 @@
-// require('express-async-errors'); // não instalado && aplicado
-
+require('express-async-errors');
 const express = require('express');
 
+const { errorHandler } = require('../middleware/login.midd');
 const userController = require('../controller/user.controller');
 
 const app = express();
 
 app.use(express.json());
 
-app.get('/coffee', (_req, res) => res.status(418).end());
 app.post('/login', userController.loginUser);
+
+app.use(errorHandler);
 
 module.exports = app;

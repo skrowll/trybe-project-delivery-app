@@ -8,7 +8,7 @@ const loginUser = async ({ password, email }) => {
     attributes: { exclude: ['id'] },
   });
 
-  if (!user) throw new Error('Invalid email');
+  if (!user) throw new Error('Not found');
 
   const validPass = md5(password) === user.password;
 

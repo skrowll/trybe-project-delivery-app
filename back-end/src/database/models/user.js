@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = (models) => {
     User.hasMany(models.Sale, 
-      { foreignKey: 'userId', as: 'sales' },
+      { foreignKey: 'userId', as: 'salesUser' }, // fix: associations iguais
     );
     User.hasMany(models.Sale, 
-      { foreignKey: 'sellerId', as: 'sales' },
+      { foreignKey: 'sellerId', as: 'salesSeller' }, // fix: associations iguais
     );
   };
 

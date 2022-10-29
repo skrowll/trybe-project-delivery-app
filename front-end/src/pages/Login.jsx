@@ -46,14 +46,19 @@ export default function Login() {
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
 
-      setIsLogged(true);
+      if (role === 'customer') {
+        navigate('/customer/products');
+      }
+      if (role === 'seller') {
+        navigate('/seller/orders');
+      }
+      if (role === 'admin') {
+        navigate('/admin/manage');
+      }
     } catch (error) {
-      console.log(error);
-      setIsLogged(false);
+      setIsLogged(true);
     }
   };
-
-  if (isLogged) return navigate('/xablau');
 
   return (
     <section className="login">
@@ -86,10 +91,16 @@ export default function Login() {
           <button
             type="button"
             onClick={ () => navigate('/register') }
-            data-testid="common_login__button-login"
+            data-testid="common_login__button-register"
           >
             <span>Ainda não tenho conta</span>
           </button>
+          <div
+            style={ { display: (isLogged ? 'block' : 'none') } }
+            data-testid="common_login__element-invalid-email"
+          >
+            Email ou senha incorretos
+          </div>
         </form>
       </div>
     </section>

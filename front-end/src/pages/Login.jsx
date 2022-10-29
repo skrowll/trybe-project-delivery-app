@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { requestLogin, setToken } from '../services/requests';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -8,10 +9,11 @@ export default function Login() {
     password: '',
   });
   const [isButtonDisabled, setDisabled] = useState(true);
+  const [isLogged, setIsLogged] = useState(false);
 
   useEffect(() => {
     const MIN_PASSWORD_LENGTH = 6;
-    const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i;
+    const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.([a-z]+)?$/i;
 
     const isEmailValid = emailRegex.test(loginInputs.email);
     const isPasswordValid = loginInputs.password.length >= MIN_PASSWORD_LENGTH;
@@ -33,6 +35,25 @@ export default function Login() {
       [name]: value,
     }));
   };
+
+  const login = async (event) => {
+    event.preventDefault();
+    try {
+      const { token, role } = await requestLogin('/login', loginInputs);
+
+      setToken(token);
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+
+      setIsLogged(true);
+    } catch (error) {
+      console.log(error);
+      setIsLogged(false);
+    }
+  };
+
+  if (isLogged) return navigate('/xablau');
 
   return (
     <section className="login">
@@ -56,7 +77,7 @@ export default function Login() {
           />
           <button
             type="button"
-            // onClick={}
+            onClick={ (event) => login(event) }
             data-testid="common_login__button-login"
             disabled={ isButtonDisabled }
           >

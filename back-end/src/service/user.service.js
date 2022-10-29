@@ -1,9 +1,9 @@
 const md5 = require('md5');
-const { User } = require('../database/models');
+const { users } = require('../database/models');
 const { configAuthorization } = require('../utils/Auth');
 
 const loginUser = async ({ password, email }) => {
-  const user = await User.findOne({ where: { email } });
+  const user = await users.findOne({ where: { email } });
 
   if (!user) throw new Error('Invalid email');
 

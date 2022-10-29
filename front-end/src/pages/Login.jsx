@@ -9,11 +9,12 @@ export default function Login() {
     password: '',
   });
   const [isButtonDisabled, setDisabled] = useState(true);
-  const [isLogged, setIsLogged] = useState(false);
+  const [notLogged, setNotLogged] = useState(false);
 
   useEffect(() => {
     const MIN_PASSWORD_LENGTH = 6;
-    const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.([a-z]+)?$/i;
+    // const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.([a-z]+)?$/i;
+    const emailRegex = /^[a-z0-9._]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i;
 
     const isEmailValid = emailRegex.test(loginInputs.email);
     const isPasswordValid = loginInputs.password.length >= MIN_PASSWORD_LENGTH;
@@ -56,7 +57,7 @@ export default function Login() {
         navigate('/admin/manage');
       }
     } catch (error) {
-      setIsLogged(true);
+      setNotLogged(true);
     }
   };
 
@@ -96,7 +97,7 @@ export default function Login() {
             <span>Ainda não tenho conta</span>
           </button>
           <div
-            style={ { display: (isLogged ? 'block' : 'none') } }
+            style={ { display: (notLogged ? 'block' : 'none') } }
             data-testid="common_login__element-invalid-email"
           >
             Email ou senha incorretos

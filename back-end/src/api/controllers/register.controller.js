@@ -1,4 +1,4 @@
-const SvcRegister = require('../services/SvcRegister');
+const SvcRegister = require('../services/register.service');
 
 const create = async (req, res) => {
   const created = await SvcRegister.create(req.body);

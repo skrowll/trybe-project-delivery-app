@@ -1,3 +1,4 @@
-const register = require('./RtsRegister');
+const register = require('./register.routes');
+const login = require('./login.routes');
 
-module.exports = { register };
+module.exports = { register, login };

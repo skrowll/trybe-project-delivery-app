@@ -1,6 +1,6 @@
 const md5 = require('md5');
-const { users } = require('../database/models');
-const { configAuthorization } = require('../utils/Auth');
+const { users } = require('../../database/models');
+const { configAuthorization } = require('../../utils/Auth');
 
 const loginUser = async ({ password, email }) => {
   const user = await users.findOne({ where: { email } });
@@ -17,7 +17,7 @@ const loginUser = async ({ password, email }) => {
   
   const token = configAuthorization.signAuth(user);
 
-  if (!validPass) {
+  if (!token) {
     const error = new Error('Invalid token');
     error.status = 400;
     throw error;

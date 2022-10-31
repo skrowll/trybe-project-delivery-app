@@ -9,7 +9,7 @@ export default function Login() {
     password: '',
   });
   const [isButtonDisabled, setDisabled] = useState(true);
-  const [notLogged, setNotLogged] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
 
   useEffect(() => {
     const MIN_PASSWORD_LENGTH = 6;
@@ -42,6 +42,8 @@ export default function Login() {
     try {
       const { token, role } = await requestLogin('/login', loginInputs);
 
+      console.log('token', token, 'role', role);
+
       setToken(token);
 
       localStorage.setItem('token', token);
@@ -53,11 +55,11 @@ export default function Login() {
       if (role === 'seller') {
         navigate('/seller/orders');
       }
-      if (role === 'admin') {
+      if (role === 'administrator') {
         navigate('/admin/manage');
       }
     } catch (error) {
-      setNotLogged(true);
+      setIsLogged(true);
     }
   };
 
@@ -97,7 +99,7 @@ export default function Login() {
             <span>Ainda não tenho conta</span>
           </button>
           <div
-            style={ { display: (notLogged ? 'block' : 'none') } }
+            style={ { display: (isLogged ? 'block' : 'none') } }
             data-testid="common_login__element-invalid-email"
           >
             Email ou senha incorretos

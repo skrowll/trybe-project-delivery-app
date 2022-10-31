@@ -2,7 +2,7 @@ const { DATE } = require("sequelize");
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Sales', {
+    await queryInterface.createTable('sales', {
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -14,7 +14,7 @@ module.exports = {
         allowNull: false,
         field: 'user_id',
         references: {
-          model: 'Users',
+          model: 'users',
           key: 'id',
         },
       },
@@ -23,7 +23,7 @@ module.exports = {
         allowNull: false,
         field: 'seller_id',
         references: {
-          model: 'Users',
+          model: 'users',
           key: 'id',
         },
       },
@@ -55,6 +55,6 @@ module.exports = {
     });
   },
   async down(queryInterface, _Sequelize) {
-    await queryInterface.dropTable('Sales');
+    await queryInterface.dropTable('sales');
   }
 };

@@ -13,11 +13,7 @@ const create = async (payload) => {
 
   const createdUser = await users.findOne({ where: { email: created.email } });
 
-  console.log('Service  1:', createdUser);
-
-  const { password:_, ...createdUserWithoutPassword } = createdUser;
-  
-  console.log('Service  2:', createdUserWithoutPassword);
+  const { password:_, ...createdUserWithoutPassword } = createdUser.dataValues;
 
   const token = configAuthorization.signAuth(createdUserWithoutPassword);
 

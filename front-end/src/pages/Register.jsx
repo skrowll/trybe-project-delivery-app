@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { requestRegister, setToken } from '../services/requests';
 
 function Register() {
@@ -7,6 +8,7 @@ function Register() {
   const [password, setPassword] = useState('');
   const [isDisabled, setIsDisabled] = useState(true);
   const [failedRegister, setFailedRegister] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const MIN_PASS = 6;
@@ -28,12 +30,13 @@ function Register() {
     try {
       const registerInputs = { name, email, password };
       const { token, role } = await requestRegister('/register', registerInputs);
+
       setToken(token);
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
       if (role === 'customer') navigate('/customer/products');
       if (role === 'seller') navigate('/seller/orders');
-      if (role === 'admin') navigate('/admin/manage');
+      if (role === 'administrator') navigate('/admin/manage');
     } catch (error) {
       setFailedRegister(true);
     }

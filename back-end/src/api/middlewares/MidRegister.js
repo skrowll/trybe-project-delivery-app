@@ -3,7 +3,7 @@ const joi = require('joi');
 const schema = joi.object({
   name: joi.string().min(12).required(),
   email: joi.string().email({ minDomainSegments: 2 }).required(),
-  password: joi.string().max(6).required(),
+  password: joi.string().min(6).required(),
 });
 
 const validateInputs = async (req, res, next) => {

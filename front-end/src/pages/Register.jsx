@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { requestRegister, setToken } from '../services/requests';
 
 function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isDisabled, setIsDisabled] = useState(true);
+  const [failedRegister, setFailedRegister] = useState(false);
 
   useEffect(() => {
     const MIN_PASS = 6;
@@ -18,10 +20,23 @@ function Register() {
     } else {
       setIsDisabled(false);
     }
+    setFailedRegister(false);
   }, [name, email, password]);
 
-  const register = (e) => {
+  const register = async (e) => {
     e.preventDefault();
+    try {
+      const registerInputs = { name, email, password };
+      const { token, role } = await requestRegister('/register', registerInputs);
+      setToken(token);
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+      if (role === 'customer') navigate('/customer/products');
+      if (role === 'seller') navigate('/seller/orders');
+      if (role === 'admin') navigate('/admin/manage');
+    } catch (error) {
+      setFailedRegister(true);
+    }
   };
 
   return (
@@ -58,6 +73,12 @@ function Register() {
           REGISTER
         </button>
       </form>
+      <div
+        style={ { display: failedRegister ? 'block' : 'none' } }
+        data-testid="common_register__element-invalid_register"
+      >
+        Este usuário já existe!
+      </div>
     </section>
   );
 }

@@ -12,9 +12,9 @@ const validateToken = (req, _res, next) => {
     if (role !== 'administrator') throw new Error(errorMessage);
     console.log(role);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw new Error(errorMessage);
-  };
+  }
   next();
 };
 

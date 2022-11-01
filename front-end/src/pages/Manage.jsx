@@ -27,7 +27,7 @@ function Manage() {
   const adminRegister = async (event) => {
     event.preventDefault();
     try {
-      const token = localStorage.getItem('token');
+      const { token } = JSON.parse(localStorage.getItem('user'));
       setToken(token);
       const registerInputs = { name, email, password, role };
       await requestAdminRegister('/admin/manage', registerInputs);
@@ -38,7 +38,7 @@ function Manage() {
   };
 
   return (
-    <section>
+    <section className="manage-section">
       <form>
         <h1>Cadastrar novo usuário</h1>
         <input

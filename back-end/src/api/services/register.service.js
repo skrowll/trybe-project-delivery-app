@@ -14,10 +14,11 @@ const create = async (payload) => {
   const created = await users.create({ ...payload, password: md5(password) });
   const createdUser = await users.findOne({ where: { email: created.email } });
 
-  const { password: _, ...createdUserWithoutPassword } = createdUser.dataValues;
+  const { password: _, ...createdUserWithoutPassword } = createdUser.get();
+
   const token = configAuthorization.signAuth(createdUserWithoutPassword);
 
-  return { role: createdUser.role, token };
+  return { name: createdUser.name, email: createdUser.email, role: createdUser.role, token };
 };
 
 const adminCreate = async (payload) => {

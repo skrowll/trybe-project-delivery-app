@@ -42,8 +42,6 @@ export default function Login() {
     try {
       const { token, role } = await requestLogin('/login', loginInputs);
 
-      console.log('token', token, 'role', role);
-
       setToken(token);
 
       localStorage.setItem('token', token);

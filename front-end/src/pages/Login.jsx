@@ -61,7 +61,7 @@ export default function Login() {
   };
 
   return (
-    <section className="login">
+    <section className="login-section">
       <div className="login-modal">
         <div className="fake-logo" />
         <form>

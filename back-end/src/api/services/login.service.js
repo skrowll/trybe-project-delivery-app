@@ -10,18 +10,12 @@ const loginUser = async ({ password, email }) => {
   const validPass = md5(password) === user.password;
 
   if (!validPass) throw new Error('Invalid password', { cause: { status: 400 } });
-  //   const error = new Error('Invalid password');
-  //   error.status = 400;
-  //   throw error;
-  // }
   
-  const token = configAuthorization.signAuth(user);
+  const { password: _, ...foundUserInfo } = user.get();
+  
+  const token = configAuthorization.signAuth(foundUserInfo);
 
   if (!token) throw new Error('Invalid token', { cause: { status: 400 } });
-  //   const error = new Error('Invalid token');
-  //   error.status = 400;
-  //   throw error;
-  // }
 
   return { name: user.name, email: user.email, role: user.role, token };
 };

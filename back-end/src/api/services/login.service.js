@@ -6,7 +6,7 @@ const HttpStatus = require('../../utils/HttpStatus');
 const loginUser = async ({ password, email }) => {
   const user = await users.findOne({ where: { email } });
   if (!user) {
-    throw new Error('Invalid email', { cause: { status: HttpStatus.BAD_REQUEST } });
+    throw new Error('Invalid email', { cause: { status: HttpStatus.NOT_FOUND } });
   }
 
   const validPass = md5(password) === user.password;

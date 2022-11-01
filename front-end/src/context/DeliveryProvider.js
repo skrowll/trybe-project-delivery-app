@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import JWTDecode from 'jwt-decode';
 import DeliveryContext from './DeliveryContext';
@@ -6,16 +6,17 @@ import DeliveryContext from './DeliveryContext';
 function DeliveryProvider({ children }) {
   const [user, setUser] = useState({});
 
-  function setUserProfileToState() {
+  const decodeJWTGetUser = useCallback(() => {
     const userToken = localStorage.getItem('token');
     const userEntity = JWTDecode(userToken);
-    setUser(userEntity);
-  }
+    return userEntity;
+  }, []);
 
   const providerContext = useMemo(() => ({
     user,
-    setUserProfileToState,
-  }), [user]);
+    setUser,
+    decodeJWTGetUser,
+  }), [user, decodeJWTGetUser]);
 
   return (
     <DeliveryContext.Provider

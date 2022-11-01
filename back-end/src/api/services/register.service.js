@@ -20,4 +20,18 @@ const create = async (payload) => {
   return { role: createdUser.role, token };
 };
 
-module.exports = { create };
+const adminCreate = async (payload) => {
+  const { email, password } = payload;
+
+  const existingUser = await users.findOne({ where: { email } });
+
+  if (existingUser) throw new Error('User already registered', { cause: { status: 409 } });
+  
+  const created = await users.create({ ...payload, password: md5(password) });
+
+  const { password: _, ...userWithoutPassword } = created.get();
+
+  return userWithoutPassword;
+};
+
+module.exports = { create, adminCreate };

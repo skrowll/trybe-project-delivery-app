@@ -1,11 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import DeliveryContext from './DeliveryContext';
 
 function DeliveryProvider({ children }) {
+  const [products, setProducts] = useState();
+
   const providerContext = useMemo(() => ({
-    // Adicione os items a serem compartilhados pela aplicação aqui.
-  }), []);
+    products,
+    setProducts,
+  }), [products]);
 
   return (
     <DeliveryContext.Provider

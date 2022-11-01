@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const JWT_KEY_PATH = require('path').resolve(__dirname, '../../jwt.evaluation.key');
 
-const JWT_SECRET = require("fs").readFileSync(JWT_KEY_PATH, { encoding: "utf-8" });
+const JWT_SECRET = require('fs').readFileSync(JWT_KEY_PATH, { encoding: 'utf-8' });
 
 const JWT_CONFIG = { expiresIn: '5d', algorithm: 'HS256' };
 

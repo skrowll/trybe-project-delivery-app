@@ -5,29 +5,20 @@ const HttpStatus = require('../../utils/HttpStatus');
 
 const loginUser = async ({ password, email }) => {
   const user = await users.findOne({ where: { email } });
-
   if (!user) {
-    const error = new Error('Invalid email');
-    error.status = HttpStatus.BAD_REQUEST;
-    throw error;
+    throw new Error('Invalid email', { cause: { status: HttpStatus.NOT_FOUND } });
   }
 
   const validPass = md5(password) === user.password;
-
   if (!validPass) {
-    const error = new Error('Invalid password');
-    error.status = HttpStatus.BAD_REQUEST;
-    throw error;
+    throw new Error('Invalid password', { cause: { status: HttpStatus.BAD_REQUEST } });
   }
-  
+
   const { password: _, ...foundUserInfo } = user.get();
   
   const token = configAuthorization.signAuth(foundUserInfo);
-
   if (!token) {
-    const error = new Error('Invalid token');
-    error.status = HttpStatus.BAD_REQUEST;
-    throw error;
+    throw new Error('Invalid token', { cause: { status: HttpStatus.BAD_REQUEST } });
   }
 
   return { name: user.name, email: user.email, role: user.role, token };

@@ -11,7 +11,7 @@ const loginUser = async ({ password, email }) => {
 
   if (!validPass) throw new Error('Invalid password', { cause: { status: 400 } });
   
-  const { password: _, ...foundUserInfo } = user.dataValues;
+  const { password: _, ...foundUserInfo } = user.get();
   
   const token = configAuthorization.signAuth(foundUserInfo);
 

@@ -1,26 +1,42 @@
-import { useEffect, useContext } from 'react';
-import DeliveryContext from '../context/DeliveryContext';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import JWTDecode from 'jwt-decode';
 
 function Navbar() {
-  const { user, setUser, decodeJWTGetUser } = useContext(DeliveryContext);
+  const [username, setUsername] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const userProfile = decodeJWTGetUser();
-    setUser(userProfile.data.user);
-  }, [decodeJWTGetUser, setUser]);
+    const userToken = localStorage.getItem('token');
+    const userEntity = JWTDecode(userToken);
+    localStorage.setItem('name', userEntity.data.user.name);
+    localStorage.setItem('email', userEntity.data.user.email);
+
+    setUsername(userEntity.data.user.name);
+  }, []);
+
+  const loggoutUser = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
+    navigate('/login');
+  };
 
   return (
     <nav className="navbar">
       <div className="delivery-menu-options">
         <ul>
-          <li>PRODUTOS</li>
-          <li>MEUS PEDIDOS</li>
+          <Link to="/customer/products"><li>PRODUTOS</li></Link>
+          <Link to="/customer/orders"><li>MEUS PEDIDOS</li></Link>
         </ul>
       </div>
       <div>
         <ul className="delivery-user-options">
-          <li>{user.name}</li>
-          <li>Sair</li>
+          <li>{username}</li>
+          <button type="button" onClick={ loggoutUser }>
+            Sair
+          </button>
         </ul>
       </div>
     </nav>

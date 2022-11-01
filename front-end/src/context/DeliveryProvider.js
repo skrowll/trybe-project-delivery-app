@@ -4,6 +4,7 @@ import DeliveryContext from './DeliveryContext';
 
 function DeliveryProvider({ children }) {
   const providerContext = useMemo(() => ({
+    // Adicione os items a serem compartilhados pela aplicação aqui.
   }), []);
 
   return (

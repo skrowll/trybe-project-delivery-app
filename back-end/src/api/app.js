@@ -2,7 +2,7 @@ require('express-async-errors');
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
-const { errorHandler } = require('./middlewares/login.middleware');
+const errorMiddleware = require('./middlewares/error.middleware');
 
 const app = express();
 
@@ -17,6 +17,6 @@ app.use('/customer', routes.customer);
 
 app.get('/coffee', (_req, res) => res.status(418).end());
 
-app.use(errorHandler);
+app.use(errorMiddleware);
 
 module.exports = app;

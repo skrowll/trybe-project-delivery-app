@@ -40,12 +40,11 @@ export default function Login() {
   const login = async (event) => {
     event.preventDefault();
     try {
-      const { token, role } = await requestLogin('/login', loginInputs);
+      const { token, role, name, email } = await requestLogin('/login', loginInputs);
 
       setToken(token);
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
+      localStorage.setItem('user', JSON.stringify({ name, email, role, token }));
 
       if (role === 'customer') {
         navigate('/customer/products');

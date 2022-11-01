@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import JWTDecode from 'jwt-decode';
 import DeliveryContext from './DeliveryContext';
 
 function DeliveryProvider({ children }) {

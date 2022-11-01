@@ -26,7 +26,7 @@ const adminCreate = async (payload) => {
 
   const existingUser = await users.findOne({ where: { email } });
 
-  if (existingUser) throw new Error('User already registered', { cause: { status: 409 } });
+  if (existingUser) throw new Error('User already registered', { cause: { status: HttpStatus.CONFLICT } });
   
   const created = await users.create({ ...payload, password: md5(password) });
 

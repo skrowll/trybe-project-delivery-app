@@ -6,8 +6,8 @@ const customerPath = async () => {
   if (!getProducts) throw new Error('Products not found', { cause: { status: 404 } });
 
   return getProducts;
-}
+};
 
 module.exports = {
   customerPath,
-}
+};

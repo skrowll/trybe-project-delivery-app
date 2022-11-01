@@ -10,7 +10,10 @@ const validateToken = (req, _res, next) => {
 
   try {
     const { data: { user: { role } } } = configAuthorization.verifyAuth(authorization);
-    if (role !== 'administrator') throw new Error(errorMessage, { cause: { status: HttpStatus.UNAUTHORIZED } });
+
+    if (role !== 'administrator') {
+      throw new Error(errorMessage, { cause: { status: HttpStatus.UNAUTHORIZED } });
+    }
   } catch (error) {
     throw new Error(errorMessage, { cause: { status: HttpStatus.UNAUTHORIZED } });
   }

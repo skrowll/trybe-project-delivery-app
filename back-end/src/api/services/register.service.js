@@ -7,7 +7,9 @@ const create = async (payload) => {
   const { email, password } = payload;
 
   const existingUser = await users.findOne({ where: { email } });
-  if (existingUser) throw new Error('User already registered', { cause: { status: HttpStatus.CONFLICT } });
+  if (existingUser) {
+    throw new Error('User already registered', { cause: { status: HttpStatus.CONFLICT } });
+  }
   
   const created = await users.create({ ...payload, password: md5(password) });
   const createdUser = await users.findOne({ where: { email: created.email } });
@@ -23,7 +25,9 @@ const adminCreate = async (payload) => {
 
   const existingUser = await users.findOne({ where: { email } });
 
-  if (existingUser) throw new Error('User already registered', { cause: { status: HttpStatus.CONFLICT } });
+  if (existingUser) {
+    throw new Error('User already registered', { cause: { status: HttpStatus.CONFLICT } });
+  }
   
   const created = await users.create({ ...payload, password: md5(password) });
 

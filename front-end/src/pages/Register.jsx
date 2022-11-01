@@ -29,11 +29,15 @@ function Register() {
     e.preventDefault();
     try {
       const registerInputs = { name, email, password };
-      const { token, role } = await requestRegister('/register', registerInputs);
+      const { token, role, name: userName,
+        email: userEmail } = await requestRegister('/register', registerInputs);
 
       setToken(token);
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
+      localStorage.setItem(
+        'user',
+        JSON.stringify({ name: userName, email: userEmail, role, token }),
+      );
+
       if (role === 'customer') navigate('/customer/products');
       if (role === 'seller') navigate('/seller/orders');
       if (role === 'administrator') navigate('/admin/manage');

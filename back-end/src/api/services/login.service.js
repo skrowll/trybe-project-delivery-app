@@ -13,8 +13,10 @@ const loginUser = async ({ password, email }) => {
   if (!validPass) {
     throw new Error('Invalid password', { cause: { status: HttpStatus.BAD_REQUEST } });
   }
+
+  const { password: _, ...foundUserInfo } = user.get();
   
-  const token = configAuthorization.signAuth(user);
+  const token = configAuthorization.signAuth(foundUserInfo);
   if (!token) {
     throw new Error('Invalid token', { cause: { status: HttpStatus.BAD_REQUEST } });
   }

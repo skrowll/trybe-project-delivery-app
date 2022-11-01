@@ -38,7 +38,7 @@ function Manage() {
   };
 
   return (
-    <section>
+    <section className="manage-section">
       <form>
         <h1>Cadastrar novo usuário</h1>
         <input

@@ -1,25 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import JWTDecode from 'jwt-decode';
 
 function Navbar() {
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userToken = localStorage.getItem('token');
-    const userEntity = JWTDecode(userToken);
-    localStorage.setItem('name', userEntity.data.user.name);
-    localStorage.setItem('email', userEntity.data.user.email);
-
-    setUsername(userEntity.data.user.name);
+    const userJSON = localStorage.getItem('user');
+    const userProfile = JSON.parse(userJSON);
+    setUsername(userProfile.name);
   }, []);
 
   const loggoutUser = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('name');
-    localStorage.removeItem('email');
+    localStorage.removeItem('user');
     navigate('/login');
   };
 

@@ -1,15 +1,6 @@
-const errorMiddleware = (err, _req, res, _next) => {
-  if (!err.status) {
-    return res.status(500).json({
-      message: err.message,
-      code: 500,
-    });
-  };
+const HttpStatus = require("../../utils/HttpStatus");
 
-  return res.status(err.status).json({
-    message: err.message,
-    code: err.status,
-  });
-}
+const errorMiddleware = (error, _req, res, _next) => res
+  .status(error.cause.status || HttpStatus.INTERNAL).json({ error: error.message });
 
 module.exports = errorMiddleware;

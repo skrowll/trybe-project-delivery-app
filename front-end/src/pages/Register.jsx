@@ -13,7 +13,7 @@ function Register() {
   useEffect(() => {
     const MIN_PASS = 6;
     const MIN_NAME = 12;
-    const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i;
+    const emailRegex = /^[a-z0-9._]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i;
     const invalidName = !name.length || name.length < MIN_NAME;
     const invalidEmail = !email.length || !emailRegex.test(email);
     const invalidPassword = !password.length || password.length < MIN_PASS;

@@ -1,4 +1,5 @@
 const joi = require('joi');
+const HttpStatus = require('../../utils/HttpStatus');
 
 const schema = joi.object({
   name: joi.string().min(12).required(),
@@ -11,7 +12,7 @@ const validateInputs = async (req, res, next) => {
 
   const { error } = schema.validate({ name, email, password });
 
-  if (error) return res.status(401).json({ message: error.message });
+  if (error) return res.status(HttpStatus.UNAUTHORIZED).json({ message: error.message });
 
   next(); 
 };

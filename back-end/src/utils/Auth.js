@@ -1,12 +1,14 @@
 require('dotenv/config');
 const jwt = require('jsonwebtoken');
 
-const { JWT_SECRET } = process.env;
+const JWT_KEY_PATH = require('path').resolve(__dirname, '../../jwt.evaluation.key');
 
-const jwtConfig = { expiresIn: '5d', algorithm: 'HS256' };
+const JWT_SECRET = require('fs').readFileSync(JWT_KEY_PATH, { encoding: 'utf-8' });
+
+const JWT_CONFIG = { expiresIn: '5d', algorithm: 'HS256' };
 
 const configAuthorization = {
-  signAuth: (user) => jwt.sign({ data: { user } }, JWT_SECRET, jwtConfig),
+  signAuth: (user) => jwt.sign({ data: { user } }, JWT_SECRET, JWT_CONFIG),
   verifyAuth: (payload) => jwt.verify(payload, JWT_SECRET),
 };
 

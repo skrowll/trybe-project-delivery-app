@@ -24,14 +24,26 @@ function Products() {
         return (
           <div
             key={ uuidv4() }
-            data-testid={ `customer_products__element-card-price-${id}` }
           >
-            <img src={ urlImage } alt={ name } />
-            <span>{name}</span>
-            <span>{price}</span>
+            <img
+              src={ urlImage }
+              alt={ name }
+              data_testid={ `customer_products__img-card-bg-image-${id}` }
+            />
+            <span
+              data-testid={ `customer_products__element-card-title-${id}` }
+            >
+              {name}
+            </span>
+            <span
+              data-testid={ `customer_products__element-card-price-${id}` }
+            >
+              {price}
+            </span>
             <div className="card-controls">
               <button
                 type="button"
+                data_testid={ `customer_products__button-card-add-item-${id}` }
               >
                 +
               </button>
@@ -39,10 +51,12 @@ function Products() {
                 <input
                   id="item_quantity"
                   type="text"
+                  data_testid={ `customer_products__input-card-quantity-${id}` }
                 />
               </label>
               <button
                 type="button"
+                data_testid={ `customer_products__button-card-rm-item-${id}` }
               >
                 -
               </button>

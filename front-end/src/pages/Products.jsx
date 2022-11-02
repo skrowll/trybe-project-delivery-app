@@ -6,13 +6,13 @@ import { requestProducts } from '../services/requests';
 
 function Products() {
   const { products, setProducts } = useContext(DeliveryContext);
-  const [quantity, setQuantity] = useState(0);
-  const [cartState, setCartState] = useState([]);
+  const [quantity, setQuantity] = useState(0); // Quantidade do produto
+  const [cartState, setCartState] = useState([]); // Array com produtos manipulados
 
   const fetchProducts = useCallback(async () => {
     const productsList = await requestProducts('/customer/products');
     setProducts(productsList);
-  }, [setProducts]);
+  }, [setProducts]); // Requisição da lista de produtos do back-end
 
   useEffect(() => {
     fetchProducts();
@@ -20,7 +20,7 @@ function Products() {
 
   useEffect(() => {
     localStorage.setItem('carrinho', JSON.stringify(cartState));
-  }, [cartState]);
+  }, [cartState]); // Cria um novo array com os produtos manipulados no LocalStorage
 
   const handleCardControls = (event, product) => {
     event.preventDefault();
@@ -32,7 +32,7 @@ function Products() {
         name: product.name,
         urlImage: product.urlImage,
         quantity,
-      }]);
+      }]); // Caso seja feito um clique no botão de adicionar será incrementado + 1 ao estado quantity, dai será atualizado o estado do array de produtos manipulados, toda vez que esse array é alterado o useEffect acima é chamado e é criado um novo array no LocalStorage.
     }
     if (name === 'rm_button' && quantity - 1 >= 0) {
       setQuantity(Number(quantity) - 1);
@@ -41,7 +41,7 @@ function Products() {
         name: product.name,
         urlImage: product.urlImage,
         quantity,
-      }]);
+      }]); // Caso seja feito um clique no botão de adicionar será decrementado - 1 ao estado quantity, dai será atualizado o estado do array de produtos manipulados, toda vez que esse array é alterado o useEffect acima é chamado e é criado um novo array no LocalStorage.
     }
   };
 
@@ -55,7 +55,7 @@ function Products() {
         name: product.name,
         urlImage: product.urlImage,
         quantity,
-      }]);
+      }]); // Caso seja alterado o campo de valor da quantidade de produtos será alterado também o número do estado quantity, dai será atualizado o estado do array de produtos manipulados, toda vez que esse array é alterado o useEffect acima é chamado e é criado um novo array no LocalStorage.
     }
   };
 

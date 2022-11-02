@@ -1,10 +1,12 @@
 import { useContext, useEffect, useCallback, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { useNavigate } from 'react-router-dom';
 import DeliveryContext from '../context/DeliveryContext';
 import { requestProducts } from '../services/requests';
 
 function Products() {
+  const navigate = useNavigate();
   const { products, setProducts } = useContext(DeliveryContext);
   const [quantity, setQuantity] = useState(0); // Quantidade do produto
   const [cartState, setCartState] = useState([]); // Array com produtos manipulados
@@ -113,6 +115,13 @@ function Products() {
           </div>
         );
       })}
+      <button
+        name="tanto faz"
+        type="button"
+        onClick={ () => navigate('/customer/checkout') }
+      >
+        aqui krl
+      </button>
     </section>
   );
 }

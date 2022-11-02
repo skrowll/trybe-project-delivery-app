@@ -1,5 +1,5 @@
 const HttpStatus = require('../../utils/HttpStatus');
-const { products, sales, salesProducts } = require('../../database/models');
+const { products, sales } = require('../../database/models');
 
 const customerPath = async () => {
   const getProducts = await products.findAll();
@@ -49,4 +49,3 @@ pedido: {
 
   // return order;
  */
-

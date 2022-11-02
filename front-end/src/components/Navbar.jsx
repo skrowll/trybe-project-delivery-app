@@ -20,17 +20,33 @@ function Navbar() {
     <nav className="navbar">
       <div className="delivery-menu-options">
         <ul>
-          <Link to="/customer/products"><li>PRODUTOS</li></Link>
-          <Link to="/customer/orders"><li>MEUS PEDIDOS</li></Link>
+          <Link
+            to="/customer/products"
+            data_testid="customer_products__element-navbar-link-products"
+          >
+            <li>PRODUTOS</li>
+          </Link>
+          <Link
+            to="/customer/orders"
+            data_testid="customer_products__element-navbar-link-orders"
+          >
+            <li>MEUS PEDIDOS</li>
+          </Link>
         </ul>
       </div>
       <div>
-        <ul className="delivery-user-options">
-          <li>{username}</li>
-          <button type="button" onClick={ loggoutUser }>
-            Sair
-          </button>
-        </ul>
+        <span
+          data_testid="customer_products__element-navbar-user-full-name"
+        >
+          {username}
+        </span>
+        <button
+          type="button"
+          onClick={ loggoutUser }
+          data_testid="customer_products__element-navbar-link-logout"
+        >
+          Sair
+        </button>
       </div>
     </nav>
   );

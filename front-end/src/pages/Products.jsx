@@ -29,6 +29,24 @@ function Products() {
             <img src={ urlImage } alt={ name } />
             <span>{name}</span>
             <span>{price}</span>
+            <div className="card-controls">
+              <button
+                type="button"
+              >
+                +
+              </button>
+              <label htmlFor="item_quantity">
+                <input
+                  id="item_quantity"
+                  type="text"
+                />
+              </label>
+              <button
+                type="button"
+              >
+                -
+              </button>
+            </div>
           </div>
         );
       })}

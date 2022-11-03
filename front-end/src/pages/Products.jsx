@@ -116,11 +116,10 @@ function Products() {
         );
       })}
       <button
-        name="tanto faz"
         type="button"
         onClick={ () => navigate('/customer/checkout') }
       >
-        aqui krl
+        Checkout
       </button>
     </section>
   );

@@ -35,8 +35,8 @@ function Products() {
   }, [cartItems, productToCart, productInputs]);
 
   useEffect(() => { // Salva carrinho no LocalStorage
-    localStorage.setItem('carrinho', JSON.stringify(cartItems));
-  }, [cartItems]);
+    localStorage.setItem('carrinho', JSON.stringify([]));
+  }, [productInputs]);
 
   useEffect(() => { // Adiciona um novo produto ao carrinho
     if (Object.keys(productInputs).length > 0) {

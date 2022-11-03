@@ -1,8 +1,9 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 
 import DeliveryContext from '../context/DeliveryContext';
 import Navbar from '../components/Navbar';
+// import { request } from '../services/requests';
 
 const header = [
   'Item',
@@ -13,15 +14,28 @@ const header = [
   'Remover Item',
 ];
 
+const mockSellers = [
+  'Apex Legends',
+  'League of Legends',
+  'Age of Empires III',
+];
+
 function Checkout() {
   const { products, setProducts } = useContext(DeliveryContext);
 
-  const total = products.reduce((acc, { price, quantity }) => acc + price * quantity, 0);
+  const [listSeller, setListSeller] = useState([]);
+  const [seller, setSeller] = useState(listSeller[0]);
+  const [address, setAddress] = useState('');
+  const [numberAddress, setNumberAddress] = useState(0);
 
   useEffect(() => {
-    // const total = ;
-    // console.log(total);
-  }, [products]);
+    // const data = request('get', '/users?role="seller"');
+    // setSellers(data);
+    setListSeller(mockSellers);
+    setSeller(mockSellers[0]);
+  }, []);
+
+  const total = products.reduce((acc, { price, quantity }) => acc + price * quantity, 0);
 
   const removeItem = (id, list) => list.filter(({ id: idFilter }) => idFilter !== id);
 
@@ -73,9 +87,41 @@ function Checkout() {
         <span>{ `Total: R$${(total).toFixed(2)}` }</span>
       </fieldset>
       <h2>Detalhe e Endereço para Entrega</h2>
-      {/* <fieldset>
-
-      </fieldset> */}
+      <fieldset>
+        <span>Vendedor(a)</span>
+        <select
+          id="sellers"
+          name="sellers"
+          onChange={ ({ target: { value } }) => setSeller(value) }
+        >
+          {
+            listSeller.map((name) => (
+              <option
+                key={ name }
+                value={ name }
+              >
+                { name }
+              </option>
+            ))
+          }
+        </select>
+        <span>Endereço</span>
+        <input
+          type="text"
+          value={ address }
+          onChange={ ({ target: { value } }) => setAddress(value) }
+        />
+        <span>Número</span>
+        <input
+          type="number"
+          value={ numberAddress }
+          onChange={ ({ target: { value } }) => setNumberAddress(value) }
+        />
+        <input type="button" value="Finalizar Pedido" />
+      </fieldset>
+      <span>
+        { seller }
+      </span>
     </>
   );
 }

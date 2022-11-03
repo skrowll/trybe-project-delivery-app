@@ -8,56 +8,88 @@ import { requestProducts } from '../services/requests';
 function Products() {
   const navigate = useNavigate();
   const { products, setProducts } = useContext(DeliveryContext);
-  const [quantity, setQuantity] = useState(0); // Quantidade do produto
-  const [cartState, setCartState] = useState([]); // Array com produtos manipulados
+  const [productToCart, setProductToCart] = useState({}); // Produto atual a ser manipulado, definido quando digito o valor ou aumento/diminuo
+  const [productInputs, setProductInputs] = useState({}); // Inputs dinâmicos de cada produto da página
+  const [cartItems, setCartItems] = useState([]); // Estado local do carrinho de compras
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = useCallback(async () => { // Recupera os produtos do backend
     const productsList = await requestProducts('/customer/products');
     setProducts(productsList);
-  }, [setProducts]); // Requisição da lista de produtos do back-end
+  }, [setProducts]);
 
-  useEffect(() => {
+  useEffect(() => { // Recupera os produtos do backend
     fetchProducts();
   }, [fetchProducts]);
 
-  useEffect(() => {
-    localStorage.setItem('carrinho', JSON.stringify(cartState));
-  }, [cartState]); // Cria um novo array com os produtos manipulados no LocalStorage
+  const verifyProductOnCart = useCallback(() => { // Verifica se o produto que estou manipulando já existe no carrinho
+    const MIN_NUMBER = -1;
+    const productExistOnCart = cartItems
+      .findIndex((prod) => prod.id === productToCart.id);
 
-  const handleCardControls = (event, product) => {
+    if (productExistOnCart > MIN_NUMBER) { // Caso exista o carrinho é copiado, editado e atualizado
+      const newCart = cartItems;
+      newCart[productExistOnCart].quantity = productInputs[productToCart.name];
+      setCartItems(newCart);
+      return true;
+    }
+
+    return false;
+  }, [cartItems, productToCart, productInputs]);
+
+  useEffect(() => { // Salva carrinho no LocalStorage
+    localStorage.setItem('carrinho', JSON.stringify([]));
+  }, [productInputs]);
+
+  useEffect(() => { // Adiciona um novo produto ao carrinho
+    if (Object.keys(productInputs).length > 0) {
+      const isProductAlreadyAdded = verifyProductOnCart();
+
+      if (isProductAlreadyAdded) return null;
+
+      setCartItems((prev) => [...prev, {
+        ...productToCart,
+        quantity: productInputs[productToCart.name]
+          ? productInputs[productToCart.name] : 1,
+      }]);
+    }
+  }, [productInputs, productToCart, verifyProductOnCart]);
+
+  const handleInputsChange = (event, product) => { // Lida com a mudança do input por digitação
     event.preventDefault();
-    const { name } = event.target;
-    if (name === 'add_button') {
-      setQuantity(Number(quantity) + 1);
-      return setCartState([...cartState, {
-        id: product.id,
-        name: product.name,
-        urlImage: product.urlImage,
-        quantity,
-      }]); // Caso seja feito um clique no botão de adicionar será incrementado + 1 ao estado quantity, dai será atualizado o estado do array de produtos manipulados, toda vez que esse array é alterado o useEffect acima é chamado e é criado um novo array no LocalStorage.
-    }
-    if (name === 'rm_button' && quantity - 1 >= 0) {
-      setQuantity(Number(quantity) - 1);
-      return setCartState([...cartState, {
-        id: product.id,
-        name: product.name,
-        urlImage: product.urlImage,
-        quantity,
-      }]); // Caso seja feito um clique no botão de adicionar será decrementado - 1 ao estado quantity, dai será atualizado o estado do array de produtos manipulados, toda vez que esse array é alterado o useEffect acima é chamado e é criado um novo array no LocalStorage.
-    }
+    const { name, value } = event.target;
+    setProductToCart(product); // Guarda o produto que está sendo manipulado no estado
+    setProductInputs({ // Cria dinâmicamente um estado para o input do produto atual
+      ...productInputs,
+      [name]: Number(value),
+    });
   };
+  const handleButtonChange = (name, event, product) => { // Lida com a mudança do input por botões
+    const { name: buttonAction } = event.target;
+    setProductToCart(product); // Guarda o produto que está sendo manipulado no estado
+    if (productInputs[name] === undefined) {
+      setProductInputs({ // Cria dinâmicamente um estado para o input do produto atual
+        ...productInputs,
+        [name]: 1,
+      });
 
-  const handleCardChange = (event, product) => {
-    event.preventDefault();
-    const { value } = event.target;
-    if (value >= 0) {
-      setQuantity(value);
-      return setCartState([...cartState, {
-        id: product.id,
-        name: product.name,
-        urlImage: product.urlImage,
-        quantity,
-      }]); // Caso seja alterado o campo de valor da quantidade de produtos será alterado também o número do estado quantity, dai será atualizado o estado do array de produtos manipulados, toda vez que esse array é alterado o useEffect acima é chamado e é criado um novo array no LocalStorage.
+      return null;
+    }
+    if (buttonAction === 'add_button') {
+      setProductInputs({ // Adiciona +1 ao estado do input do produto atual
+        ...productInputs,
+        [name]: productInputs[name] + 1,
+      });
+
+      return null;
+    }
+    if (buttonAction === 'rm_button') {
+      if (productInputs[name] === 0) return null; // Caso o valor do input do produto atual seja 0, a operação de remover um produto não é executada.
+      setProductInputs({ // Subtraí -1 do estado do input do produto atual
+        ...productInputs,
+        [name]: productInputs[name] - 1,
+      });
+
+      return null;
     }
   };
 
@@ -90,24 +122,23 @@ function Products() {
                 name="add_button"
                 type="button"
                 data_testid={ `customer_products__button-card-add-item-${id}` }
-                onClick={ (e) => handleCardControls(e, prod) }
+                onClick={ (e) => handleButtonChange(name, e, prod) }
               >
                 +
               </button>
-              <label htmlFor="item_quantity">
-                <input
-                  name="item_quantity"
-                  type="number"
-                  min="0"
-                  data_testid={ `customer_products__input-card-quantity-${id}` }
-                  onChange={ (e) => handleCardChange(e, prod) }
-                />
-              </label>
+              <input
+                name={ name }
+                type="number"
+                min="0"
+                data_testid={ `customer_products__input-card-quantity-${id}` }
+                onChange={ (e) => handleInputsChange(e, prod) }
+                value={ productInputs[name] }
+              />
               <button
                 name="rm_button"
                 type="button"
                 data_testid={ `customer_products__button-card-rm-item-${id}` }
-                onClick={ (e) => handleCardControls(e, prod) }
+                onClick={ (e) => handleButtonChange(name, e, prod) }
               >
                 -
               </button>
@@ -126,27 +157,3 @@ function Products() {
 }
 
 export default Products;
-
-// setQuantity(Number(quantity) - 1);
-//       const oldCartStored = JSON.parse(localStorage.getItem('carrinho'));
-
-//       const cartElementIndex = oldCartStored
-//         .findIndex((prod) => prod.id === product.id);
-
-//       if (cartElementIndex) {
-//         const actualCart = cartState;
-//         actualCart[cartElementIndex] = {
-//           id: product.id,
-//           name: product.name,
-//           urlImage: product.urlImage,
-//           quantity,
-//         };
-//         return setCartState([...actualCart]);
-//       }
-
-//       return setCartState([...cartState, {
-//         id: product.id,
-//         name: product.name,
-//         urlImage: product.urlImage,
-//         quantity,
-//       }]);

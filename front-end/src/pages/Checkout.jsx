@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
 
 import DeliveryContext from '../context/DeliveryContext';
@@ -16,15 +16,22 @@ const header = [
 function Checkout() {
   const { products, setProducts } = useContext(DeliveryContext);
 
+  const total = products.reduce((acc, { price, quantity }) => acc + price * quantity, 0);
+
+  useEffect(() => {
+    // const total = ;
+    // console.log(total);
+  }, [products]);
+
   const removeItem = (id, list) => list.filter(({ id: idFilter }) => idFilter !== id);
 
-  const createListTable = (({ id, name, quantity, price }) => (
+  const createListTable = (({ id, name, quantity, price }, indexLine) => (
     <>
-      <td>{ id }</td>
+      <td>{ indexLine }</td>
       <td>{ name }</td>
       <td>{ quantity }</td>
       <td>{ `R$${price}` }</td>
-      <td>{ quantity * price }</td>
+      <td>{ `R$${(price * quantity).toFixed(2)}` }</td>
       <td>
         <input
           type="button"
@@ -38,8 +45,8 @@ function Checkout() {
   return (
     <>
       <Navbar />
-      <div>
-        <h1>Finalizar Pedido</h1>
+      <h1>Finalizar Pedido</h1>
+      <fieldset>
         <table>
           <thead>
             <tr>
@@ -57,13 +64,18 @@ function Checkout() {
                   key={ index }
                   data-testid={ `element-order-table-name-${index}` }
                 >
-                  { createListTable(product) }
+                  { createListTable(product, index + 1) }
                 </tr>
               ))
             }
           </tbody>
         </table>
-      </div>
+        <span>{ `Total: R$${(total).toFixed(2)}` }</span>
+      </fieldset>
+      <h2>Detalhe e Endereço para Entrega</h2>
+      {/* <fieldset>
+
+      </fieldset> */}
     </>
   );
 }

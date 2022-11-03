@@ -14,17 +14,25 @@ const header = [
 ];
 
 function Checkout() {
-  const { products } = useContext(DeliveryContext);
+  const { products, setProducts } = useContext(DeliveryContext);
+
+  const removeItem = (id, list) => list.filter(({ id: idFilter }) => idFilter !== id);
 
   const createListTable = (({ id, name, quantity, price }) => (
-    <tr>
+    <>
       <td>{ id }</td>
       <td>{ name }</td>
       <td>{ quantity }</td>
       <td>{ `R$${price}` }</td>
       <td>{ quantity * price }</td>
-      <td>{ () => '' }</td>
-    </tr>
+      <td>
+        <input
+          type="button"
+          value="remover"
+          onClick={ () => setProducts(removeItem(id, products)) }
+        />
+      </td>
+    </>
   ));
 
   return (
@@ -44,7 +52,14 @@ function Checkout() {
           </thead>
           <tbody>
             {
-              products.map((product) => createListTable(product))
+              products.map((product, index) => (
+                <tr
+                  key={ index }
+                  data-testid={ `element-order-table-name-${index}` }
+                >
+                  { createListTable(product) }
+                </tr>
+              ))
             }
           </tbody>
         </table>

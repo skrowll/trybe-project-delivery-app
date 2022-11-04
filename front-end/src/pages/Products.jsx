@@ -30,7 +30,7 @@ function Products() {
   useEffect(() => { // Toda vez que o carrinho do estado local atualiza adiciona ao carrinho no localStorage todos os produtos com quatidade maior que 0
     const productsToStorage = products.filter((prod) => prod.quantity !== 0)
       .map((prod) => {
-        prod.subTotal = prod.price * prod.quantity;
+        prod.subTotal = (prod.price * prod.quantity).toFixed(2);
         return prod;
       });
 

@@ -37,7 +37,8 @@ function Products() {
     localStorage.setItem('carrinho', JSON.stringify({
       products: productsToStorage,
       totalPrice: productsToStorage.map((prod) => prod.subTotal)
-        .reduce((prev, crr) => prev + crr, 0).toString().replace('.', ','),
+        .reduce((prev, crr) => prev + crr, 0).toFixed(2).toString()
+        .replace('.', ','),
     }));
 
     const recoveredCart = JSON.parse(localStorage.getItem('carrinho'));

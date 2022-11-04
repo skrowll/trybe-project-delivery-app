@@ -3,8 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import DeliveryContext from '../context/DeliveryContext';
 
 function Navbar() {
+  const {
+    isCheckoutButtonDisabled,
+    cartTotalPrice,
+  } = useContext(DeliveryContext);
+
   const [username, setUsername] = useState('');
-  const { checkoutProductStatus } = useContext(DeliveryContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,11 +51,11 @@ function Navbar() {
         <button
           name="checkout_button"
           type="button"
-          disabled={ checkoutProductStatus.checkoutDisabled }
+          disabled={ isCheckoutButtonDisabled }
           onClick={ () => navigate('/customer/checkout') }
           data-testid="customer_products__checkout-bottom-value"
         >
-          <span>{checkoutProductStatus.totalPrice}</span>
+          <span>{cartTotalPrice}</span>
         </button>
         <button
           type="button"

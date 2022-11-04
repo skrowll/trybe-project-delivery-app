@@ -5,7 +5,10 @@ import DeliveryContext from '../context/DeliveryContext';
 import { requestProducts } from '../services/requests';
 
 function Products() {
-  const { setCheckoutProductStatus } = useContext(DeliveryContext);
+  const {
+    setIsCheckoutButtonDisabled,
+    setCartTotalPrice,
+  } = useContext(DeliveryContext);
 
   const [products, setProducts] = useState([]);
 
@@ -25,32 +28,28 @@ function Products() {
   }, [fetchProducts]);
 
   useEffect(() => { // Toda vez que o carrinho do estado local atualiza adiciona ao carrinho no localStorage todos os produtos com quatidade maior que 0
-    const productsToStorage = products.filter((prod) => prod.quantity !== 0);
-    const productsToSTorageWithPrice = productsToStorage.map((prod) => {
-      prod.subTotal = prod.price * prod.quantity;
-      return prod;
-    });
+    const productsToStorage = products.filter((prod) => prod.quantity !== 0)
+      .map((prod) => {
+        prod.subTotal = prod.price * prod.quantity;
+        return prod;
+      });
 
     localStorage.setItem('carrinho', JSON.stringify({
-      products: productsToSTorageWithPrice,
-      totalPrice: productsToSTorageWithPrice.map((prod) => prod.subTotal)
+      products: productsToStorage,
+      totalPrice: productsToStorage.map((prod) => prod.subTotal)
         .reduce((prev, crr) => prev + crr, 0).toString().replace('.', ','),
     }));
 
     const recoveredCart = JSON.parse(localStorage.getItem('carrinho'));
 
-    if (recoveredCart.totalPrice > 0) {
-      setCheckoutProductStatus({
-        checkoutDisabled: false,
-        totalPrice: recoveredCart.totalPrice,
-      });
-    } else {
-      setCheckoutProductStatus({
-        checkoutDisabled: true,
-        totalPrice: recoveredCart.totalPrice,
-      });
+    if (recoveredCart.length > 0) { // Se existirem itens no carrinho do localStorage...
+      setIsCheckoutButtonDisabled(false); // Botão habilita
+      setCartTotalPrice(recoveredCart.totalPrice); // Passa o preço total
+    } else { // Se não
+      setIsCheckoutButtonDisabled(true); // Botão desabilita
+      setCartTotalPrice(0); // Preço total é 0
     }
-  }, [products, setCheckoutProductStatus]);
+  }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice]);
 
   const updateCart = (product, buttonAction) => { // Atualiza o carrinho do estado local
     const newCart = products.map((prod) => { // Retorna um array com quantidades atualizadas

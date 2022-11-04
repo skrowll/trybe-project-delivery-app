@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import DeliveryContext from './DeliveryContext';
 
 function DeliveryProvider({ children }) {
-  const [checkoutProductStatus, setCheckoutProductStatus] = useState({
-    checkoutDisabled: true,
-    totalPrice: 0,
-  });
+  const [isCheckoutButtonDisabled, setIsCheckoutButtonDisabled] = useState(true);
+  const [cartTotalPrice, setCartTotalPrice] = useState(0);
 
   const providerContext = useMemo(() => ({
-    checkoutProductStatus,
-    setCheckoutProductStatus,
-  }), [checkoutProductStatus]);
+    isCheckoutButtonDisabled,
+    cartTotalPrice,
+    setIsCheckoutButtonDisabled,
+    setCartTotalPrice,
+  }), [isCheckoutButtonDisabled, cartTotalPrice]);
 
   return (
     <DeliveryContext.Provider

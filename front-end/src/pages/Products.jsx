@@ -21,7 +21,7 @@ function Products() {
       quantity: 0,
     }));
     setCartItems(productListWithQuantity);
-    setProducts(productsList);
+    setProducts(productListWithQuantity);
   }, [setProducts]);
 
   useEffect(() => { // Chama a função que recupera os produtos do back-end
@@ -135,7 +135,7 @@ function Products() {
                 min="0"
                 data-testid={ `customer_products__input-card-quantity-${id}` }
                 onChange={ handleInputsChange }
-                value={ cartItems[(id - 1)].quantity } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
+                value={ cartItems[(id - 1)]?.quantity } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
               />
               <button
                 name="add_button"

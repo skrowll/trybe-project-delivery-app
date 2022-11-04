@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import DeliveryContext from './DeliveryContext';
 
 function DeliveryProvider({ children }) {
-  const [products, setProducts] = useState();
+  const [products, setProducts] = useState([]);
 
   const providerContext = useMemo(() => ({
     products,

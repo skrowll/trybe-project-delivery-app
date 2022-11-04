@@ -11,17 +11,29 @@ function Products() {
   const {
     setIsCheckoutButtonDisabled,
     setCartTotalPrice,
+    setProductList,
   } = useContext(DeliveryContext);
 
   const [products, setProducts] = useState([]);
 
-  const fetchProducts = useCallback(async () => { // Recupera produtos e adiciona uma quantidade a cada um deles.
+  const fetchProducts = useCallback(async () => {
     const productsList = await requestProducts('/customer/products')
-      .then((response) => response.map((prod) => ({
-        ...prod,
-        price: Number(prod.price),
-        quantity: 0,
-      })));
+      .then((response) => response.map((prod) => {
+        if (prod.quantity) {
+          return {
+            ...prod,
+            price: Number(prod.price),
+            subTotal: 0,
+          };
+        }
+
+        return {
+          ...prod,
+          price: Number(prod.price),
+          quantity: 0,
+          subTotal: 0,
+        };
+      }));
 
     setProducts(productsList);
   }, []);
@@ -40,7 +52,8 @@ function Products() {
     localStorage.setItem('carrinho', JSON.stringify({
       products: productsToStorage,
       totalPrice: productsToStorage.map((prod) => prod.subTotal)
-        .reduce((prev, crr) => prev + crr, 0).toString().replace('.', ','),
+        .reduce((prev, crr) => prev + crr, 0).toFixed(2).toString()
+        .replace('.', ','),
     }));
 
     const recoveredCart = JSON.parse(localStorage.getItem('carrinho'));
@@ -48,16 +61,18 @@ function Products() {
     if (recoveredCart.products.length > 0) {
       setIsCheckoutButtonDisabled(false);
       setCartTotalPrice(recoveredCart.totalPrice);
+      setProductList(products);
     } else {
       setIsCheckoutButtonDisabled(true);
       setCartTotalPrice(0);
+      setProductList(products);
     }
-  }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice]);
+  }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice, setProductList]);
 
-  const updateCart = (product, buttonAction) => { // Atualiza o carrinho do estado local
-    const newProducts = products.map((prod) => { // Retorna um array com quantidades atualizadas
+  const updateCart = (product, buttonAction) => {
+    const newProducts = products.map((prod) => {
       if (prod.id === product.id) {
-        if (buttonAction === 'add_button') { // Verifica qual botão foi selecionado, add_button ou rm_button
+        if (buttonAction === 'add_button') {
           prod.quantity += 1;
           return prod;
         }
@@ -104,6 +119,7 @@ function Products() {
             <img
               src={ urlImage }
               alt={ name }
+              height="100px"
               data-testid={ `customer_products__img-card-bg-image-${id}` }
             />
             <span

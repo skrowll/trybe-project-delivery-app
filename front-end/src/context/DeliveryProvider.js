@@ -3,19 +3,15 @@ import PropTypes from 'prop-types';
 import DeliveryContext from './DeliveryContext';
 
 function DeliveryProvider({ children }) {
-  const [products, setProducts] = useState([]);
   const [checkoutProductStatus, setCheckoutProductStatus] = useState({
     checkoutDisabled: true,
-    amountOfItemsOnCart: 0,
     totalPrice: 0,
   });
 
   const providerContext = useMemo(() => ({
-    products,
-    setProducts,
     checkoutProductStatus,
     setCheckoutProductStatus,
-  }), [products, checkoutProductStatus]);
+  }), [checkoutProductStatus]);
 
   return (
     <DeliveryContext.Provider

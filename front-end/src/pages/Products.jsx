@@ -12,13 +12,24 @@ function Products() {
 
   const [products, setProducts] = useState([]);
 
-  const fetchProducts = useCallback(async () => { // Recupera produtos e adiciona uma quantidade a cada um deles.
+  const fetchProducts = useCallback(async () => {
     const productsList = await requestProducts('/customer/products')
-      .then((response) => response.map((prod) => ({
-        ...prod,
-        price: Number(prod.price),
-        quantity: 0,
-      })));
+      .then((response) => response.map((prod) => {
+        if (prod.quantity) {
+          return {
+            ...prod,
+            price: Number(prod.price),
+            subTotal: 0,
+          };
+        }
+
+        return {
+          ...prod,
+          price: Number(prod.price),
+          quantity: 0,
+          subTotal: 0,
+        };
+      }));
 
     setProducts(productsList);
   }, []);
@@ -30,7 +41,7 @@ function Products() {
   useEffect(() => { // Toda vez que o carrinho do estado local atualiza adiciona ao carrinho no localStorage todos os produtos com quatidade maior que 0
     const productsToStorage = products.filter((prod) => prod.quantity !== 0)
       .map((prod) => {
-        prod.subTotal = (prod.price * prod.quantity).toFixed(2);
+        prod.subTotal = prod.price * prod.quantity;
         return prod;
       });
 
@@ -52,10 +63,10 @@ function Products() {
     }
   }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice]);
 
-  const updateCart = (product, buttonAction) => { // Atualiza o carrinho do estado local
-    const newProducts = products.map((prod) => { // Retorna um array com quantidades atualizadas
+  const updateCart = (product, buttonAction) => {
+    const newProducts = products.map((prod) => {
       if (prod.id === product.id) {
-        if (buttonAction === 'add_button') { // Verifica qual botão foi selecionado, add_button ou rm_button
+        if (buttonAction === 'add_button') {
           prod.quantity += 1;
           return prod;
         }
@@ -102,6 +113,7 @@ function Products() {
             <img
               src={ urlImage }
               alt={ name }
+              height="100px"
               data-testid={ `customer_products__img-card-bg-image-${id}` }
             />
             <span

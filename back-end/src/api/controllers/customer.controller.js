@@ -7,12 +7,11 @@ const customerPath = async (_req, res) => {
   return res.status(HttpStatus.OK).json(products);
 };
 
-const createOrder = async (req, _res) => {
+const createOrder = async (req, res) => {
   const saleInfo = req.body;
-  // const order = await customerService.createOrder(saleInfo);
-  await customerService.createOrder(saleInfo);
+  const order = await customerService.createOrder(saleInfo);
 
-  // return res.status(HttpStatus.CREATED).json(order);
+  return res.status(HttpStatus.CREATED).json(order);
 };
 
 module.exports = {

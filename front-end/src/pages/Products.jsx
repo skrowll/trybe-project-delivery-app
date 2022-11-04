@@ -45,7 +45,7 @@ function Products() {
 
     const recoveredCart = JSON.parse(localStorage.getItem('carrinho'));
 
-    if (recoveredCart.length > 0) {
+    if (recoveredCart.products.length > 0) {
       setIsCheckoutButtonDisabled(false);
       setCartTotalPrice(recoveredCart.totalPrice);
     } else {

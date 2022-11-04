@@ -5,16 +5,19 @@ import DeliveryContext from './DeliveryContext';
 function DeliveryProvider({ children }) {
   const [isCheckoutButtonDisabled, setIsCheckoutButtonDisabled] = useState(true);
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
-  const [productList, setProductList] = useState([]);
+  const [globalCart, setGlobalCart] = useState({
+    products: [],
+    totalPrice: 0,
+  });
 
   const providerContext = useMemo(() => ({
-    productList,
+    globalCart,
     isCheckoutButtonDisabled,
     cartTotalPrice,
     setIsCheckoutButtonDisabled,
     setCartTotalPrice,
-    setProductList,
-  }), [isCheckoutButtonDisabled, cartTotalPrice, productList]);
+    setGlobalCart,
+  }), [isCheckoutButtonDisabled, cartTotalPrice, globalCart]);
 
   return (
     <DeliveryContext.Provider

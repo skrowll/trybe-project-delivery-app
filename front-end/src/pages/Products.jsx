@@ -11,7 +11,7 @@ function Products() {
   const {
     setIsCheckoutButtonDisabled,
     setCartTotalPrice,
-    setProductList,
+    setGlobalCart,
   } = useContext(DeliveryContext);
 
   const [products, setProducts] = useState([]);
@@ -61,13 +61,13 @@ function Products() {
     if (recoveredCart.products.length > 0) {
       setIsCheckoutButtonDisabled(false);
       setCartTotalPrice(recoveredCart.totalPrice);
-      setProductList(products);
+      setGlobalCart(recoveredCart);
     } else {
       setIsCheckoutButtonDisabled(true);
       setCartTotalPrice(0);
-      setProductList(products);
+      setGlobalCart(recoveredCart);
     }
-  }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice, setProductList]);
+  }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice, setGlobalCart]);
 
   const updateCart = (product, buttonAction) => {
     const newProducts = products.map((prod) => {

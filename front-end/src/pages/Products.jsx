@@ -42,17 +42,17 @@ function Products() {
 
     const recoveredCart = JSON.parse(localStorage.getItem('carrinho'));
 
-    if (recoveredCart.length > 0) { // Se existirem itens no carrinho do localStorage...
-      setIsCheckoutButtonDisabled(false); // Botão habilita
-      setCartTotalPrice(recoveredCart.totalPrice); // Passa o preço total
-    } else { // Se não
-      setIsCheckoutButtonDisabled(true); // Botão desabilita
-      setCartTotalPrice(0); // Preço total é 0
+    if (recoveredCart.length > 0) {
+      setIsCheckoutButtonDisabled(false);
+      setCartTotalPrice(recoveredCart.totalPrice);
+    } else {
+      setIsCheckoutButtonDisabled(true);
+      setCartTotalPrice(0);
     }
   }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice]);
 
   const updateCart = (product, buttonAction) => { // Atualiza o carrinho do estado local
-    const newCart = products.map((prod) => { // Retorna um array com quantidades atualizadas
+    const newProducts = products.map((prod) => { // Retorna um array com quantidades atualizadas
       if (prod.id === product.id) {
         if (buttonAction === 'add_button') { // Verifica qual botão foi selecionado, add_button ou rm_button
           prod.quantity += 1;
@@ -66,13 +66,13 @@ function Products() {
       return prod;
     });
 
-    setProducts(newCart); // Atualiza o carrinho do estado local
+    setProducts(newProducts); // Atualiza o carrinho do estado local
   };
 
   const handleInputsChange = (event) => {
     event.preventDefault();
     const { name, value } = event.target;
-    const newCart = products.map((prod) => { // Retorna um array com quantidades atualizadas
+    const newProducts = products.map((prod) => { // Retorna um array com quantidades atualizadas
       if (prod.name === name) {
         prod.quantity = Number(value);
         return prod;
@@ -81,7 +81,7 @@ function Products() {
       return prod;
     });
 
-    setProducts(newCart); // Atualiza o carrinho do estado local
+    setProducts(newProducts); // Atualiza o carrinho do estado local
   };
 
   const handleButtonChange = (event, product) => {

@@ -7,90 +7,96 @@ import { requestProducts } from '../services/requests';
 
 function Products() {
   const navigate = useNavigate();
-  const { products, setProducts } = useContext(DeliveryContext);
-  const [productToCart, setProductToCart] = useState({}); // Produto atual a ser manipulado, definido quando digito o valor ou aumento/diminuo
-  const [productInputs, setProductInputs] = useState({}); // Inputs dinâmicos de cada produto da página
-  const [cartItems, setCartItems] = useState([]); // Estado local do carrinho de compras
 
-  const fetchProducts = useCallback(async () => { // Recupera os produtos do backend
+  const {
+    products,
+    setProducts,
+    setCheckoutProductStatus,
+  } = useContext(DeliveryContext);
+
+  const [cartItems, setCartItems] = useState([]);
+
+  const fetchProducts = useCallback(async () => { // Recupera produtos e adiciona uma quantidade a cada um deles.
     const productsList = await requestProducts('/customer/products');
+    const productListWithQuantity = productsList.map((prod) => ({
+      ...prod,
+      price: Number(prod.price),
+      quantity: 0,
+    }));
+    setCartItems(productListWithQuantity);
     setProducts(productsList);
   }, [setProducts]);
 
-  useEffect(() => { // Recupera os produtos do backend
+  useEffect(() => { // Chama a função que recupera os produtos do back-end
     fetchProducts();
   }, [fetchProducts]);
 
-  const verifyProductOnCart = useCallback(() => { // Verifica se o produto que estou manipulando já existe no carrinho
-    const MIN_NUMBER = -1;
-    const productExistOnCart = cartItems
-      .findIndex((prod) => prod.id === productToCart.id);
+  useEffect(() => { // Toda vez que o carrinho do estado local atualiza adiciona ao carrinho no localStorage todos os produtos com quatidade maior que 0
+    const cartItemsToStorage = cartItems.filter((prod) => prod.quantity !== 0);
+    const cartItemsToSTorageWithPrice = cartItemsToStorage.map((prod) => {
+      prod.subTotal = prod.price * prod.quantity;
+      return prod;
+    });
 
-    if (productExistOnCart > MIN_NUMBER) { // Caso exista o carrinho é copiado, editado e atualizado
-      const newCart = cartItems;
-      newCart[productExistOnCart].quantity = productInputs[productToCart.name];
-      setCartItems(newCart);
-      return true;
+    localStorage.setItem('carrinho', JSON.stringify({
+      cartItems: cartItemsToSTorageWithPrice,
+      totalPrice: cartItemsToSTorageWithPrice.map((prod) => prod.subTotal)
+        .reduce((prev, crr) => prev + crr, 0),
+    }));
+
+    const isCartFilled = JSON.parse(localStorage.getItem('carrinho'));
+
+    if (isCartFilled.totalPrice > 0) {
+      setCheckoutProductStatus({
+        checkoutDisabled: false,
+        amountOfItemsOnCart: isCartFilled.cartItems.length,
+        totalPrice: isCartFilled.totalPrice,
+      });
+    } else {
+      setCheckoutProductStatus({
+        checkoutDisabled: true,
+        amountOfItemsOnCart: isCartFilled.cartItems.length,
+        totalPrice: isCartFilled.totalPrice,
+      });
     }
+  }, [cartItems, setCheckoutProductStatus]);
 
-    return false;
-  }, [cartItems, productToCart, productInputs]);
+  const updateCart = (product, buttonAction) => { // Atualiza o carrinho do estado local
+    const newCart = cartItems.map((prod) => { // Retorna um array com quantidades atualizadas
+      if (prod.id === product.id) {
+        if (buttonAction === 'add_button') { // Verifica qual botão foi selecionado, add_button ou rm_button
+          prod.quantity += 1;
+          return prod;
+        }
 
-  useEffect(() => { // Salva carrinho no LocalStorage
-    localStorage.setItem('carrinho', JSON.stringify([]));
-  }, [productInputs]);
+        prod.quantity = prod.quantity === 0 ? 0 : prod.quantity - 1;
+        return prod;
+      }
 
-  useEffect(() => { // Adiciona um novo produto ao carrinho
-    if (Object.keys(productInputs).length > 0) {
-      const isProductAlreadyAdded = verifyProductOnCart();
+      return prod;
+    });
 
-      if (isProductAlreadyAdded) return null;
+    setCartItems(newCart); // Atualiza o carrinho do estado local
+  };
 
-      setCartItems((prev) => [...prev, {
-        ...productToCart,
-        quantity: productInputs[productToCart.name]
-          ? productInputs[productToCart.name] : 1,
-      }]);
-    }
-  }, [productInputs, productToCart, verifyProductOnCart]);
-
-  const handleInputsChange = (event, product) => { // Lida com a mudança do input por digitação
+  const handleInputsChange = (event) => {
     event.preventDefault();
     const { name, value } = event.target;
-    setProductToCart(product); // Guarda o produto que está sendo manipulado no estado
-    setProductInputs({ // Cria dinâmicamente um estado para o input do produto atual
-      ...productInputs,
-      [name]: Number(value),
+    const newCart = cartItems.map((prod) => { // Retorna um array com quantidades atualizadas
+      if (prod.name === name) {
+        prod.quantity = Number(value);
+        return prod;
+      }
+
+      return prod;
     });
+
+    setCartItems(newCart); // Atualiza o carrinho do estado local
   };
-  const handleButtonChange = (name, event, product) => { // Lida com a mudança do input por botões
+
+  const handleButtonChange = (event, product) => {
     const { name: buttonAction } = event.target;
-    setProductToCart(product); // Guarda o produto que está sendo manipulado no estado
-    if (productInputs[name] === undefined) {
-      setProductInputs({ // Cria dinâmicamente um estado para o input do produto atual
-        ...productInputs,
-        [name]: 1,
-      });
-
-      return null;
-    }
-    if (buttonAction === 'add_button') {
-      setProductInputs({ // Adiciona +1 ao estado do input do produto atual
-        ...productInputs,
-        [name]: productInputs[name] + 1,
-      });
-
-      return null;
-    }
-    if (buttonAction === 'rm_button') {
-      if (productInputs[name] === 0) return null; // Caso o valor do input do produto atual seja 0, a operação de remover um produto não é executada.
-      setProductInputs({ // Subtraí -1 do estado do input do produto atual
-        ...productInputs,
-        [name]: productInputs[name] - 1,
-      });
-
-      return null;
-    }
+    updateCart(product, buttonAction); // Chama a função que atualiza o carrinho dependendo do botão clicado
   };
 
   return (
@@ -105,7 +111,7 @@ function Products() {
             <img
               src={ urlImage }
               alt={ name }
-              data_testid={ `customer_products__img-card-bg-image-${id}` }
+              data-testid={ `customer_products__img-card-bg-image-${id}` }
             />
             <span
               data-testid={ `customer_products__element-card-title-${id}` }
@@ -115,32 +121,32 @@ function Products() {
             <span
               data-testid={ `customer_products__element-card-price-${id}` }
             >
-              {price}
+              {price.toString().replace('.', ',')}
             </span>
             <div className="card-controls">
               <button
-                name="add_button"
+                name="rm_button"
                 type="button"
-                data_testid={ `customer_products__button-card-add-item-${id}` }
-                onClick={ (e) => handleButtonChange(name, e, prod) }
+                data-testid={ `customer_products__button-card-rm-item-${id}` }
+                onClick={ (e) => handleButtonChange(e, prod) }
               >
-                +
+                -
               </button>
               <input
                 name={ name }
                 type="number"
                 min="0"
-                data_testid={ `customer_products__input-card-quantity-${id}` }
-                onChange={ (e) => handleInputsChange(e, prod) }
-                value={ productInputs[name] }
+                data-testid={ `customer_products__input-card-quantity-${id}` }
+                onChange={ handleInputsChange }
+                value={ cartItems[(id - 1)].quantity } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
               />
               <button
-                name="rm_button"
+                name="add_button"
                 type="button"
-                data_testid={ `customer_products__button-card-rm-item-${id}` }
-                onClick={ (e) => handleButtonChange(name, e, prod) }
+                data-testid={ `customer_products__button-card-add-item-${id}` }
+                onClick={ (e) => handleButtonChange(e, prod) }
               >
-                -
+                +
               </button>
             </div>
           </div>

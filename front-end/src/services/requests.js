@@ -28,4 +28,9 @@ export const requestProducts = async (endpoint) => {
   return data;
 };
 
+export const request = async (method, endpoint, body) => {
+  const { data } = await api[method](endpoint, body);
+  return data;
+};
+
 export default api;

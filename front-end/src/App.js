@@ -6,6 +6,7 @@ import './App.css';
 import Login from './pages/Login';
 import Manage from './pages/Manage';
 import Navbar from './components/Navbar';
+import Checkout from './pages/Checkout';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           </>
         }
       />
+      <Route path="/customer/checkout" element={ <Checkout /> } />
       <Route path="/admin/manage" element={ <Manage /> } />
       <Route path="/login" element={ <Login /> } />
       <Route exact path="/" element={ <Navigate to="/login" replace /> } />

@@ -9,60 +9,53 @@ function Products() {
   const navigate = useNavigate();
 
   const {
-    products,
-    setProducts,
-    setCheckoutProductStatus,
+    setIsCheckoutButtonDisabled,
+    setCartTotalPrice,
   } = useContext(DeliveryContext);
 
-  const [cartItems, setCartItems] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const fetchProducts = useCallback(async () => { // Recupera produtos e adiciona uma quantidade a cada um deles.
-    const productsList = await requestProducts('/customer/products');
-    const productListWithQuantity = productsList.map((prod) => ({
-      ...prod,
-      price: Number(prod.price),
-      quantity: 0,
-    }));
-    setCartItems(productListWithQuantity);
+    const productsList = await requestProducts('/customer/products')
+      .then((response) => response.map((prod) => ({
+        ...prod,
+        price: Number(prod.price),
+        quantity: 0,
+      })));
+
     setProducts(productsList);
-  }, [setProducts]);
+  }, []);
 
   useEffect(() => { // Chama a função que recupera os produtos do back-end
     fetchProducts();
   }, [fetchProducts]);
 
   useEffect(() => { // Toda vez que o carrinho do estado local atualiza adiciona ao carrinho no localStorage todos os produtos com quatidade maior que 0
-    const cartItemsToStorage = cartItems.filter((prod) => prod.quantity !== 0);
-    const cartItemsToSTorageWithPrice = cartItemsToStorage.map((prod) => {
-      prod.subTotal = prod.price * prod.quantity;
-      return prod;
-    });
+    const productsToStorage = products.filter((prod) => prod.quantity !== 0)
+      .map((prod) => {
+        prod.subTotal = prod.price * prod.quantity;
+        return prod;
+      });
 
     localStorage.setItem('carrinho', JSON.stringify({
-      cartItems: cartItemsToSTorageWithPrice,
-      totalPrice: cartItemsToSTorageWithPrice.map((prod) => prod.subTotal)
-        .reduce((prev, crr) => prev + crr, 0),
+      products: productsToStorage,
+      totalPrice: productsToStorage.map((prod) => prod.subTotal)
+        .reduce((prev, crr) => prev + crr, 0).toString().replace('.', ','),
     }));
 
-    const isCartFilled = JSON.parse(localStorage.getItem('carrinho'));
+    const recoveredCart = JSON.parse(localStorage.getItem('carrinho'));
 
-    if (isCartFilled.totalPrice > 0) {
-      setCheckoutProductStatus({
-        checkoutDisabled: false,
-        amountOfItemsOnCart: isCartFilled.cartItems.length,
-        totalPrice: isCartFilled.totalPrice,
-      });
+    if (recoveredCart.length > 0) {
+      setIsCheckoutButtonDisabled(false);
+      setCartTotalPrice(recoveredCart.totalPrice);
     } else {
-      setCheckoutProductStatus({
-        checkoutDisabled: true,
-        amountOfItemsOnCart: isCartFilled.cartItems.length,
-        totalPrice: isCartFilled.totalPrice,
-      });
+      setIsCheckoutButtonDisabled(true);
+      setCartTotalPrice(0);
     }
-  }, [cartItems, setCheckoutProductStatus]);
+  }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice]);
 
   const updateCart = (product, buttonAction) => { // Atualiza o carrinho do estado local
-    const newCart = cartItems.map((prod) => { // Retorna um array com quantidades atualizadas
+    const newProducts = products.map((prod) => { // Retorna um array com quantidades atualizadas
       if (prod.id === product.id) {
         if (buttonAction === 'add_button') { // Verifica qual botão foi selecionado, add_button ou rm_button
           prod.quantity += 1;
@@ -76,13 +69,13 @@ function Products() {
       return prod;
     });
 
-    setCartItems(newCart); // Atualiza o carrinho do estado local
+    setProducts(newProducts); // Atualiza o carrinho do estado local
   };
 
   const handleInputsChange = (event) => {
     event.preventDefault();
     const { name, value } = event.target;
-    const newCart = cartItems.map((prod) => { // Retorna um array com quantidades atualizadas
+    const newProducts = products.map((prod) => { // Retorna um array com quantidades atualizadas
       if (prod.name === name) {
         prod.quantity = Number(value);
         return prod;
@@ -91,7 +84,7 @@ function Products() {
       return prod;
     });
 
-    setCartItems(newCart); // Atualiza o carrinho do estado local
+    setProducts(newProducts); // Atualiza o carrinho do estado local
   };
 
   const handleButtonChange = (event, product) => {
@@ -138,7 +131,7 @@ function Products() {
                 min="0"
                 data-testid={ `customer_products__input-card-quantity-${id}` }
                 onChange={ handleInputsChange }
-                value={ cartItems[(id - 1)].quantity } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
+                value={ products[(id - 1)]?.quantity } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
               />
               <button
                 name="add_button"

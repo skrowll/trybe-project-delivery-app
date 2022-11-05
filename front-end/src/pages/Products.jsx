@@ -1,10 +1,13 @@
 import { useContext, useEffect, useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import DeliveryContext from '../context/DeliveryContext';
-import { requestProducts } from '../services/requests';
+import { request } from '../services/requests';
 
 function Products() {
+  const navigate = useNavigate();
+
   const {
     setIsCheckoutButtonDisabled,
     setCartTotalPrice,
@@ -13,31 +16,10 @@ function Products() {
 
   const [products, setProducts] = useState([]);
 
-  const fetchProducts = useCallback(async () => {
-    const productsList = await requestProducts('/customer/products')
-      .then((response) => response.map((prod) => {
-        if (prod.quantity) {
-          return {
-            ...prod,
-            price: Number(prod.price),
-            subTotal: 0,
-          };
-        }
-
-        return {
-          ...prod,
-          price: Number(prod.price),
-          quantity: 0,
-          subTotal: 0,
-        };
-      }));
-
-    setProducts(productsList);
+  useEffect(() => {
+    request('get', '/customer/products')
+      .then((data) => setProducts(data.map((e) => { e.quantity = 0; return e; })));
   }, []);
-
-  useEffect(() => { // Chama a função que recupera os produtos do back-end
-    fetchProducts();
-  }, [fetchProducts]);
 
   useEffect(() => { // Toda vez que o carrinho do estado local atualiza adiciona ao carrinho no localStorage todos os produtos com quatidade maior que 0
     const productsToStorage = products.filter((prod) => prod.quantity !== 0)

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import Navbar from '../components/Navbar';
 
 import DeliveryContext from '../context/DeliveryContext';
 import { request } from '../services/requests';
@@ -9,47 +10,22 @@ function Products() {
   const navigate = useNavigate();
 
   const {
-    setIsCheckoutButtonDisabled,
-    setCartTotalPrice,
-    setGlobalCart,
+    values: { cart },
+    functions: { setCart },
   } = useContext(DeliveryContext);
 
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    request('get', '/customer/products')
-      .then((data) => setProducts(data.map((e) => { e.quantity = 0; return e; })));
-  }, []);
-
-  useEffect(() => { // Toda vez que o carrinho do estado local atualiza adiciona ao carrinho no localStorage todos os produtos com quatidade maior que 0
-    const productsToStorage = products.filter((prod) => prod.quantity !== 0)
-      .map((prod) => {
-        prod.subTotal = prod.price * prod.quantity;
-        return prod;
-      });
-
-    localStorage.setItem('carrinho', JSON.stringify({
-      products: productsToStorage,
-      totalPrice: productsToStorage.map((prod) => prod.subTotal)
-        .reduce((prev, crr) => prev + crr, 0).toFixed(2).toString()
-        .replace('.', ','),
-    }));
-
-    const recoveredCart = JSON.parse(localStorage.getItem('carrinho'));
-
-    if (recoveredCart.products.length > 0) {
-      setIsCheckoutButtonDisabled(false);
-      setCartTotalPrice(recoveredCart.totalPrice);
-      setGlobalCart(recoveredCart);
-    } else {
-      setIsCheckoutButtonDisabled(true);
-      setCartTotalPrice(0);
-      setGlobalCart(recoveredCart);
-    }
-  }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice, setGlobalCart]);
+  useEffect(() => request('get', '/customer/products')
+    .then((data) => {
+      setProducts(data);
+      setCart(data.map((e) => (
+        { ...e, quantity: 0, subTotat: 0 }
+      )));
+    }), [setCart]);
 
   const updateCart = (product, buttonAction) => {
-    const newProducts = products.map((prod) => {
+    const newProducts = cart.map((prod) => {
       if (prod.id === product.id) {
         if (buttonAction === 'add_button') {
           prod.quantity += 1;
@@ -63,13 +39,13 @@ function Products() {
       return prod;
     });
 
-    setProducts(newProducts); // Atualiza o carrinho do estado local
+    setCart(newProducts); // Atualiza o carrinho do estado local
   };
 
   const handleInputsChange = (event) => {
     event.preventDefault();
     const { name, value } = event.target;
-    const newProducts = products.map((prod) => { // Retorna um array com quantidades atualizadas
+    const newProducts = cart.map((prod) => { // Retorna um array com quantidades atualizadas
       if (prod.name === name) {
         prod.quantity = Number(value);
         return prod;
@@ -78,7 +54,7 @@ function Products() {
       return prod;
     });
 
-    setProducts(newProducts); // Atualiza o carrinho do estado local
+    setCart(newProducts); // Atualiza o carrinho do estado local
   };
 
   const handleButtonChange = (event, product) => {
@@ -87,66 +63,73 @@ function Products() {
   };
 
   return (
-    <section className="product-cards">
-      {products.length > 0 && products.map((prod) => {
-        const { id, name, price, urlImage } = prod;
-
-        return (
-          <div
-            key={ uuidv4() }
-          >
-            <img
-              src={ urlImage }
-              alt={ name }
-              height="100px"
-              data-testid={ `customer_products__img-card-bg-image-${id}` }
-            />
-            <span
-              data-testid={ `customer_products__element-card-title-${id}` }
-            >
-              {name}
-            </span>
-            <span
-              data-testid={ `customer_products__element-card-price-${id}` }
-            >
-              {price.toString().replace('.', ',')}
-            </span>
-            <div className="card-controls">
-              <button
-                name="rm_button"
-                type="button"
-                data-testid={ `customer_products__button-card-rm-item-${id}` }
-                onClick={ (e) => handleButtonChange(e, prod) }
-              >
-                -
-              </button>
-              <input
-                name={ name }
-                type="number"
-                min="0"
-                data-testid={ `customer_products__input-card-quantity-${id}` }
-                onChange={ handleInputsChange }
-                value={ products[(id - 1)]?.quantity } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
-              />
-              <button
-                name="add_button"
-                type="button"
-                data-testid={ `customer_products__button-card-add-item-${id}` }
-                onClick={ (e) => handleButtonChange(e, prod) }
-              >
-                +
-              </button>
-            </div>
-          </div>
-        );
-      })}
+    <>
+      <Navbar />
       <button
+        name="checkout_button"
         type="button"
         onClick={ () => navigate('/customer/checkout') }
+        data-testid="customer_products__checkout-bottom-value"
       >
-        Checkout
+        <span>{cart.totalPrice}</span>
       </button>
-    </section>
+      <section className="product-cards">
+        {
+          products.map((prod) => {
+            const { id, name, price, urlImage } = prod;
+
+            return (
+              <div
+                key={ uuidv4() }
+              >
+                <img
+                  src={ urlImage }
+                  alt={ name }
+                  height="100px"
+                  data-testid={ `customer_products__img-card-bg-image-${id}` }
+                />
+                <span
+                  data-testid={ `customer_products__element-card-title-${id}` }
+                >
+                  {name}
+                </span>
+                <span
+                  data-testid={ `customer_products__element-card-price-${id}` }
+                >
+                  {price.toString().replace('.', ',')}
+                </span>
+                <div className="card-controls">
+                  <button
+                    name="rm_button"
+                    type="button"
+                    data-testid={ `customer_products__button-card-rm-item-${id}` }
+                    onClick={ (e) => handleButtonChange(e, prod) }
+                  >
+                    -
+                  </button>
+                  <input
+                    name={ name }
+                    type="number"
+                    min="0"
+                    data-testid={ `customer_products__input-card-quantity-${id}` }
+                    onChange={ handleInputsChange }
+                    value={ cart[(id - 1)]?.quantity } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
+                  />
+                  <button
+                    name="add_button"
+                    type="button"
+                    data-testid={ `customer_products__button-card-add-item-${id}` }
+                    onClick={ (e) => handleButtonChange(e, prod) }
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        }
+      </section>
+    </>
   );
 }
 

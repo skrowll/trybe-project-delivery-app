@@ -1,13 +1,10 @@
 import { useContext, useEffect, useCallback, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useNavigate } from 'react-router-dom';
 import DeliveryContext from '../context/DeliveryContext';
 import { requestProducts } from '../services/requests';
 
 function Products() {
-  const navigate = useNavigate();
-
   const {
     setIsCheckoutButtonDisabled,
     setCartTotalPrice,

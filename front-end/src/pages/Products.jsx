@@ -25,40 +25,6 @@ function Products() {
     setCart(wereFound);
   }, [products, setCart]);
 
-  // const updateCart = (id, price, { value, buttonAction }) => {
-  //   const { totalPrice, products: prod } = cart;
-
-  //   const magicNumber = -1;
-  //   const numberAddOrRm = (buttonAction === 'add_button') ? 1 : magicNumber;
-
-  //   if (prod.every((product) => product.id !== id)) {
-  //     const productFound = products.filter((product) => product.id === id)[0];
-
-  //     const quantity = Number(value);
-
-  //     productFound.quantity = quantity;
-  //     productFound.subTotal = quantity * price;
-
-  //     setCart(({ totalPrice, products: [...prod, productFound] }));
-  //   }
-
-  //   cart.map((product) => {
-  //     if (product.id === product.id) {
-  //       if (buttonAction === 'add_button') {
-  //         product.quantity += 1;
-  //         return product;
-  //       }
-
-  //       product.quantity = product.quantity === 0 ? 0 : product.quantity - 1;
-  //       return product;
-  //     }
-
-  //     return product;
-  //   });
-
-  //   setCart(newProducts); // Atualiza o carrinho do estado local
-  // };
-
   const inputNumberHandler = ({ name, value }) => {
     const updated = products.map((e) => {
       if (e.name === name) e.quantity = +value;
@@ -66,16 +32,6 @@ function Products() {
     });
 
     setProducts(updated);
-    // const newProducts = cart.map((prod) => { // Retorna um array com quantidades atualizadas
-    //   if (prod.name === name) {
-    //     prod.quantity = Number(value);
-    //     return prod;
-    //   }
-
-    //   return prod;
-    // });
-
-    // setCart(newProducts); // Atualiza o carrinho do estado local
   };
 
   const buttonHandler = ({ name, value }, index) => {

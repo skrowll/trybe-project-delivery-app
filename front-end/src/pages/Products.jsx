@@ -9,7 +9,7 @@ function Products() {
   const navigate = useNavigate();
 
   const {
-    values: { cart, cartTotalPrice },
+    values: { cartTotalPrice },
     functions: { setCart },
   } = useContext(DeliveryContext);
 
@@ -59,18 +59,13 @@ function Products() {
   //   setCart(newProducts); // Atualiza o carrinho do estado local
   // };
 
-  const inputNumberHandler = ({ name, value }, index) => {
+  const inputNumberHandler = ({ name, value }) => {
     const updated = products.map((e) => {
       if (e.name === name) e.quantity = +value;
       return e;
     });
 
     setProducts(updated);
-    setCart((prev) => prev.map((item) => {
-      if (updated[index].name === item.name) return updated[index];
-      return item;
-    }));
-
     // const newProducts = cart.map((prod) => { // Retorna um array com quantidades atualizadas
     //   if (prod.name === name) {
     //     prod.quantity = Number(value);
@@ -134,7 +129,7 @@ function Products() {
                   name={ name }
                   value={ products[index].quantity }
                   min="0"
-                  onChange={ ({ target }) => inputNumberHandler(target, index) }
+                  onChange={ ({ target }) => inputNumberHandler(target) }
                 />
                 <input
                   data-testid={ `customer_products__button-card-add-item-${id}` }

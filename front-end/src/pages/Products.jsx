@@ -72,13 +72,15 @@ function Products() {
                 { `R$${price.toString().replace('.', ',')}` }
               </h3>
               <div className="card-controls">
-                <input
-                  data-testid={ `customer_products__button-card-rm-item-${id}` }
-                  type="button"
-                  name={ name }
-                  value="-"
+                <button
+                  data-testid={ `customer_products__button-card-add-item-${id}` }
                   onClick={ ({ target }) => buttonHandler(target, index) }
-                />
+                  name={ name }
+                  type="button"
+                  value="-"
+                >
+                  -
+                </button>
                 <input
                   data-testid={ `customer_products__input-card-quantity-${id}` }
                   type="number"
@@ -87,13 +89,15 @@ function Products() {
                   min="0"
                   onChange={ ({ target }) => inputNumberHandler(target) }
                 />
-                <input
+                <button
                   data-testid={ `customer_products__button-card-add-item-${id}` }
-                  type="button"
-                  name={ name }
-                  value="+"
                   onClick={ ({ target }) => buttonHandler(target, index) }
-                />
+                  name={ name }
+                  type="button"
+                  value="+"
+                >
+                  +
+                </button>
               </div>
             </div>
           ))

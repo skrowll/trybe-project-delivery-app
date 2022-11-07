@@ -1,30 +1,29 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-import Navbar from '../components/Navbar';
+import { request } from '../services/requests';
 
 import DeliveryContext from '../context/DeliveryContext';
-import { request } from '../services/requests';
+import Navbar from '../components/Navbar';
 
 function Products() {
   const navigate = useNavigate();
 
   const {
-    values: { cart },
+    values: { cart, cartTotalPrice },
     functions: { setCart },
   } = useContext(DeliveryContext);
 
   const [products, setProducts] = useState([]);
-  const [quantity, setQuantity] = useState({});
 
   useEffect(() => request('get', '/customer/products')
     .then((data) => {
-      setProducts(data);
-      setQuantity(data.reduce((acc, { name }) => {
-        acc[name] = 0;
-        return acc;
-      }, {}));
-    }), [setCart]);
+      setProducts(data.map((e) => { e.quantity = 0; return e; }));
+    }), []);
+
+  useEffect(() => {
+    const wereFound = products.filter(({ quantity }) => quantity > 0);
+    setCart(wereFound);
+  }, [products, setCart]);
 
   // const updateCart = (id, price, { value, buttonAction }) => {
   //   const { totalPrice, products: prod } = cart;
@@ -60,8 +59,17 @@ function Products() {
   //   setCart(newProducts); // Atualiza o carrinho do estado local
   // };
 
-  const inputNumberHandler = ({ name, value }) => {
-    setQuantity((prev) => ({ ...prev, [name]: +value }));
+  const inputNumberHandler = ({ name, value }, index) => {
+    const updated = products.map((e) => {
+      if (e.name === name) e.quantity = +value;
+      return e;
+    });
+
+    setProducts(updated);
+    setCart((prev) => prev.map((item) => {
+      if (updated[index].name === item.name) return updated[index];
+      return item;
+    }));
 
     // const newProducts = cart.map((prod) => { // Retorna um array com quantidades atualizadas
     //   if (prod.name === name) {
@@ -75,11 +83,11 @@ function Products() {
     // setCart(newProducts); // Atualiza o carrinho do estado local
   };
 
-  const buttonHandler = ({ name, value }) => {
+  const buttonHandler = ({ name, value }, index) => {
     const magicNumber = -1;
     const numberAddOrRm = (value.includes('+')) ? 1 : magicNumber;
 
-    value = quantity[name] + numberAddOrRm;
+    value = products[index].quantity + numberAddOrRm;
     value = value > magicNumber ? value : 0;
 
     inputNumberHandler({ name, value });
@@ -94,48 +102,46 @@ function Products() {
         onClick={ () => navigate('/customer/checkout') }
         data-testid="customer_products__checkout-bottom-value"
       >
-        <span>{cart.totalPrice}</span>
+        <span>{cartTotalPrice}</span>
       </button>
       <section className="product-cards">
         {
-          products.map(({ id, name, price, urlImage }) => (
-            <div
-              key={ uuidv4() }
-            >
+          products.map(({ id, name, price, urlImage }, index) => (
+            <div key={ id }>
+              <h1 data-testid={ `customer_products__element-card-title-${id}` }>
+                {name}
+              </h1>
               <img
                 src={ urlImage }
                 alt={ name }
                 height="100px"
                 data-testid={ `customer_products__img-card-bg-image-${id}` }
               />
-              <span data-testid={ `customer_products__element-card-title-${id}` }>
-                {name}
-              </span>
-              <span data-testid={ `customer_products__element-card-price-${id}` }>
-                {price.toString().replace('.', ',')}
-              </span>
+              <h3 data-testid={ `customer_products__element-card-price-${id}` }>
+                { `R$${price.toString().replace('.', ',')}` }
+              </h3>
               <div className="card-controls">
                 <input
                   data-testid={ `customer_products__button-card-rm-item-${id}` }
                   type="button"
                   name={ name }
                   value="-"
-                  onClick={ ({ target }) => buttonHandler(target) }
+                  onClick={ ({ target }) => buttonHandler(target, index) }
                 />
                 <input
                   data-testid={ `customer_products__input-card-quantity-${id}` }
                   type="number"
                   name={ name }
-                  value={ quantity[name] } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
+                  value={ products[index].quantity }
                   min="0"
-                  onChange={ ({ target }) => inputNumberHandler(target) }
+                  onChange={ ({ target }) => inputNumberHandler(target, index) }
                 />
                 <input
                   data-testid={ `customer_products__button-card-add-item-${id}` }
                   type="button"
                   name={ name }
                   value="+"
-                  onClick={ ({ target }) => buttonHandler(target) }
+                  onClick={ ({ target }) => buttonHandler(target, index) }
                 />
               </div>
             </div>

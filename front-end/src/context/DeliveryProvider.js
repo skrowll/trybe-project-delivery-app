@@ -4,13 +4,17 @@ import DeliveryContext from './DeliveryContext';
 
 function DeliveryProvider({ children }) {
   // const [isCheckoutButtonDisabled, setIsCheckoutButtonDisabled] = useState(true);
-  // const [cartTotalPrice, setCartTotalPrice] = useState(0);
-  const [cart, setCart] = useState({
-    products: [],
-    totalPrice: 0,
-  });
+  const [cartTotalPrice, setCartTotalPrice] = useState(0);
+  const [cart, setCart] = useState([]);
 
-  useEffect(() => localStorage.setItem('carrinho', JSON.stringify(cart)), [cart]);
+  useEffect(() => {
+    setCartTotalPrice(cart
+      .reduce((acc, { quantity, price }) => (
+        acc + quantity * +price
+      ), 0));
+
+    localStorage.setItem('carrinho', JSON.stringify(cart));
+  }, [cart]);
 
   const providerContext = useMemo(() => ({
   //   cart,
@@ -19,9 +23,9 @@ function DeliveryProvider({ children }) {
   //   setIsCheckoutButtonDisabled,
   //   setCartTotalPrice,
   //   setCart,
-    values: { cart },
+    values: { cart, cartTotalPrice },
     functions: { setCart },
-  }), [cart]);
+  }), [cart, cartTotalPrice]);
 
   /*
         const productsToStorage = products.filter((prod) => prod.quantity !== 0)

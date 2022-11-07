@@ -15,6 +15,7 @@ app.use('/admin', routes.admin);
 app.use('/user', routes.user);
 app.use('/register', routes.register);
 app.use('/customer', routes.customer);
+app.use('/seller', routes.seller);
 
 app.get('/coffee', (_req, res) => res.status(418).end());
 

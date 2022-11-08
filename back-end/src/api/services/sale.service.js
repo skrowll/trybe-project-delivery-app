@@ -22,9 +22,7 @@ const getSaleById = async ({ id }) => {
   const sale = await sales.findOne({
     where: { id },
     include:[
-      // {model: products, as: 'products', through: { attributes: [ 'quantity' ] }},
-      { model: saleProducts, as: 'sales' },
-      // { model: products, as: 'products', through: { attributes: [ 'quantity' ] } },
+      { model: products, as: 'products', through: { attributes: [ 'quantity' ] } },
     ],
   });
 

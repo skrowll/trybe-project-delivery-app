@@ -5,22 +5,13 @@ import Register from './pages/Register';
 import './App.css';
 import Login from './pages/Login';
 import Manage from './pages/Manage';
-import Navbar from './components/Navbar';
 import Checkout from './pages/Checkout';
 
 function App() {
   return (
     <Routes>
       <Route path="/register" element={ <Register /> } />
-      <Route
-        path="/customer/products"
-        element={
-          <>
-            <Navbar />
-            <Products />
-          </>
-        }
-      />
+      <Route path="/customer/products" element={ <Products /> } />
       <Route path="/customer/checkout" element={ <Checkout /> } />
       <Route path="/admin/manage" element={ <Manage /> } />
       <Route path="/login" element={ <Login /> } />

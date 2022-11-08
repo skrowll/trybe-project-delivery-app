@@ -10,4 +10,13 @@ const getSalesBySellerId = async (req, res, next) => {
   };
 };
 
-module.exports = { getSalesBySellerId };
+const getSaleById = async (req, res, next) => {
+  try {
+    const result = await SaleService.getSaleById(req.params);
+    return res.status(HttpStatus.OK).json(result);
+  } catch (error) {
+    next(error);
+  };
+};
+
+module.exports = { getSalesBySellerId, getSaleById };

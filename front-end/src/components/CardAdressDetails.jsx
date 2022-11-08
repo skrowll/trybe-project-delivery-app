@@ -1,30 +1,45 @@
+import propTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import { request } from '../services/requests';
 
-function CardAdressDetails() {
+function CardAdressDetails({ cart, cartTotalPrice }) {
   // const navigate = useNavigate();
   const [seller, setSeller] = useState('');
-  const [fullAddress, setFullAddress] = useState([{
-    address: '',
-    number: 0,
-  }]);
+  const [address, setAddress] = useState('');
+  const [number, setNumberAddress] = useState(0);
   const [listSeller, setListSeller] = useState([]);
 
-  const user = localStorage.getItem('user');
-  console.log(user);
-  // const sale = {
-  //   // userId: user.id,
-  //   // sellerId: ,
-  //   totalPrice,
-  //   deliveryAddress,
-  //   deliveryNumber,
-  // };
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const checkout = {
+      sale: {
+        userId: user.id,
+        sellerId: 1,
+        totalPrice: cartTotalPrice,
+        deliveryAddress: address,
+        deliveryNumber: Number(number),
+      },
+      cart,
+    };
+    console.log(checkout);
+  }, [address, number, cart, cartTotalPrice]);
 
   useEffect(() => request('get', '/user?role=seller')
     .then((data) => {
       setListSeller(data.map((e) => e));
-    }), []);
+    }));
+
+  const sendRequest = () => {
+    console.log('meh');
+    // const response = request('get', '/customer/checkout', { checkout })
+    //   .then((data) => {
+    //     setListSeller(data.map((e) => e));
+    //   });
+
+    // console.log(response);
+    // navigate('/customer/orders/<id>');
+  };
 
   return (
     <>
@@ -32,14 +47,17 @@ function CardAdressDetails() {
       <fieldset>
         <span>Vendedor(a)</span>
         <select
-          data-testid="customer_checkout__select-seller"
           id="sellers"
           name="sellers"
+          data-testid="customer_checkout__select-seller"
           onClick={ ({ target: { value } }) => setSeller(value) }
         >
           {listSeller.length > 0
             && listSeller.map(({ name }) => (
-              <option key={ name } value={ name }>
+              <option
+                key={ name }
+                value={ name }
+              >
                 {name}
               </option>
             ))}
@@ -48,34 +66,37 @@ function CardAdressDetails() {
         <input
           data-testid="customer_checkout__input-address"
           type="text"
-          value={ fullAddress.address }
-          // onChange={ ({ target: { value } }) => getAdress(value) }
-          onChange={ ({ target: { value } }) => {
-            setFullAddress((prev) => [...prev, { address: value }]);
-          } }
+          value={ address }
+          onChange={ ({ target: { value } }) => setAddress(value) }
         />
         <span>Número</span>
         <input
           data-testid="customer_checkout__input-address-number"
           type="number"
-          value={ fullAddress.number }
-          // onChange={ ({ target: { value } }) => getAdress(value) }
-          onChange={ ({ target: { value } }) => {
-            setFullAddress((prev) => [...prev, { number: value }]);
-          } }
+          value={ number }
+          onChange={ ({ target: { value } }) => setNumberAddress(value) }
         />
-        <input
+        <button
           type="button"
-          value="Finalizar Pedido"
-          onClick={ () => console.log(fullAddress) }
-          // onClick={ () => navigate('/customer/orders/<id>') }
-        />
+          // value="Finalizar Pedido"
+          onClick={ sendRequest }
+          data-testid="customer_checkout__button-submit-order"
+        >
+          Finalizar Pedido
+        </button>
       </fieldset>
-      <span>
+      <span
+        onChange={ ({ target: { value } }) => setSeller(value) }
+      >
         {seller}
       </span>
     </>
   );
 }
+
+CardAdressDetails.propTypes = {
+  cart: propTypes.arrayOf().isRequired,
+  cartTotalPrice: propTypes.number.isRequired,
+};
 
 export default CardAdressDetails;

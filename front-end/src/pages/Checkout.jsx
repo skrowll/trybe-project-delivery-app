@@ -1,24 +1,17 @@
 import { useContext } from 'react';
 import DeliveryContext from '../context/DeliveryContext';
+
 import Navbar from '../components/Navbar';
 import CardAdressDetails from '../components/CardAdressDetails';
-
-const header = [
-  'Item',
-  'Descrição',
-  'Quantidade',
-  'Valor Unitário',
-  'Sub-total',
-  'Remover Item',
-];
+import CardOrders from '../components/CardOrders';
 
 function Checkout() {
-  // const { products, setProducts } = useContext(DeliveryContext);
   const {
     functions: { setCart },
     values: { cart, cartTotalPrice } } = useContext(DeliveryContext);
 
   const removeItem = (id, list) => list.filter(({ id: idFilter }) => idFilter !== id);
+
   const createListTable = (({ id, name, quantity, price }, index) => (
     <>
       <td data-testid={ `customer_checkout__element-order-table-item-number-${index}` }>
@@ -31,10 +24,11 @@ function Checkout() {
         { quantity }
       </td>
       <td data-testid={ `customer_checkout__element-order-table-unit-price-${index}` }>
-        { `R$${price}` }
+        { price.replace('.', ',') }
       </td>
       <td data-testid={ `customer_checkout__element-order-table-sub-total-${index}` }>
-        { `R$${(price * quantity).toFixed(2)}` }
+        {/* { `R$${(price * quantity).toFixed(2)}` } */}
+        { (price * quantity).toFixed(2).replace('.', ',') }
       </td>
       <td data-testid={ `customer_checkout__element-order-table-remove-${index}` }>
         <input
@@ -45,37 +39,26 @@ function Checkout() {
       </td>
     </>
   ));
+
   return (
-    <>
+    <div>
       <Navbar />
       <h1>Finalizar Pedido</h1>
-      <fieldset>
-        <table>
-          <thead>
-            <tr>
-              {
-                header.map((name) => (
-                  <th key={ name }>{ name }</th>
-                ))
-              }
-            </tr>
-          </thead>
-          <tbody>
-            {
-              cart.map((product, index) => (
-                <tr key={ index }>
-                  { createListTable(product, index) }
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-        <span data-testid="customer_checkout__element-order-total-price">
-          { `Total: R$${(cartTotalPrice).toFixed(2)}` }
-        </span>
-      </fieldset>
-      <CardAdressDetails />
-    </>
+      <CardOrders
+        cart={ cart }
+        cartTotalPrice={ cartTotalPrice }
+        createListTable={ createListTable }
+      />
+      <CardAdressDetails
+        cart={ cart }
+        cartTotalPrice={ cartTotalPrice }
+      />
+    </div>
   );
 }
 export default Checkout;
+
+// TODO: remover por quantidade, um de cada vez
+// TODO: pegar compras do carrinho local
+// id do seller - CardAdressDetails
+// 201 - Created com retorno de id da compra

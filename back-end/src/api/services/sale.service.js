@@ -1,6 +1,6 @@
-const { users, sales } = require('../../database/models');
+const { sales } = require('../../database/models');
 const HttpStatus = require('../../utils/HttpStatus');
-const { configAuthorization } = require('../../utils/Auth')
+const { configAuthorization } = require('../../utils/Auth');
 
 const getSalesBySellerId = async ({ authorization }) => {
   const { data: { user: { id, role } } } = configAuthorization.verifyAuth(authorization);

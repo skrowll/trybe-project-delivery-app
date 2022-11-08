@@ -1,171 +1,116 @@
-import { useContext, useEffect, useCallback, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { request } from '../services/requests';
+
 import DeliveryContext from '../context/DeliveryContext';
-import { requestProducts } from '../services/requests';
+import Navbar from '../components/Navbar';
 
 function Products() {
+  const navigate = useNavigate();
+
   const {
-    setIsCheckoutButtonDisabled,
-    setCartTotalPrice,
-    setGlobalCart,
+    values: { cartTotalPrice },
+    functions: { setCart },
   } = useContext(DeliveryContext);
 
   const [products, setProducts] = useState([]);
+  const [cartBtnDisabled, setCartBtnDisabled] = useState(true);
 
-  const fetchProducts = useCallback(async () => {
-    const productsList = await requestProducts('/customer/products')
-      .then((response) => response.map((prod) => {
-        if (prod.quantity) {
-          return {
-            ...prod,
-            price: Number(prod.price),
-            subTotal: 0,
-          };
-        }
+  useEffect(() => request('get', '/customer/products')
+    .then((data) => {
+      setProducts(data.map((e) => { e.quantity = 0; return e; }));
+    }), []);
 
-        return {
-          ...prod,
-          price: Number(prod.price),
-          quantity: 0,
-          subTotal: 0,
-        };
-      }));
+  useEffect(() => {
+    const wereFound = products.filter(({ quantity }) => quantity > 0);
 
-    setProducts(productsList);
-  }, []);
+    setCart(wereFound);
+    setCartBtnDisabled(!wereFound.length);
+  }, [products, setCart]);
 
-  useEffect(() => { // Chama a função que recupera os produtos do back-end
-    fetchProducts();
-  }, [fetchProducts]);
-
-  useEffect(() => { // Toda vez que o carrinho do estado local atualiza adiciona ao carrinho no localStorage todos os produtos com quatidade maior que 0
-    const productsToStorage = products.filter((prod) => prod.quantity !== 0)
-      .map((prod) => {
-        prod.subTotal = prod.price * prod.quantity;
-        return prod;
-      });
-
-    localStorage.setItem('carrinho', JSON.stringify({
-      products: productsToStorage,
-      totalPrice: productsToStorage.map((prod) => prod.subTotal)
-        .reduce((prev, crr) => prev + crr, 0).toFixed(2).toString()
-        .replace('.', ','),
-    }));
-
-    const recoveredCart = JSON.parse(localStorage.getItem('carrinho'));
-
-    if (recoveredCart.products.length > 0) {
-      setIsCheckoutButtonDisabled(false);
-      setCartTotalPrice(recoveredCart.totalPrice);
-      setGlobalCart(recoveredCart);
-    } else {
-      setIsCheckoutButtonDisabled(true);
-      setCartTotalPrice(0);
-      setGlobalCart(recoveredCart);
-    }
-  }, [products, setIsCheckoutButtonDisabled, setCartTotalPrice, setGlobalCart]);
-
-  const updateCart = (product, buttonAction) => {
-    const newProducts = products.map((prod) => {
-      if (prod.id === product.id) {
-        if (buttonAction === 'add_button') {
-          prod.quantity += 1;
-          return prod;
-        }
-
-        prod.quantity = prod.quantity === 0 ? 0 : prod.quantity - 1;
-        return prod;
-      }
-
-      return prod;
+  const inputNumberHandler = ({ name, value }) => {
+    const updated = products.map((e) => {
+      if (e.name === name) e.quantity = +value;
+      return e;
     });
 
-    setProducts(newProducts); // Atualiza o carrinho do estado local
+    setProducts(updated);
   };
 
-  const handleInputsChange = (event) => {
-    event.preventDefault();
-    const { name, value } = event.target;
-    const newProducts = products.map((prod) => { // Retorna um array com quantidades atualizadas
-      if (prod.name === name) {
-        prod.quantity = Number(value);
-        return prod;
-      }
+  const buttonHandler = ({ name, value }, index) => {
+    const magicNumber = -1;
+    const numberAddOrRm = (value.includes('+')) ? 1 : magicNumber;
 
-      return prod;
-    });
+    value = products[index].quantity + numberAddOrRm;
+    value = value > magicNumber ? value : 0;
 
-    setProducts(newProducts); // Atualiza o carrinho do estado local
-  };
-
-  const handleButtonChange = (event, product) => {
-    const { name: buttonAction } = event.target;
-    updateCart(product, buttonAction); // Chama a função que atualiza o carrinho dependendo do botão clicado
+    inputNumberHandler({ name, value });
   };
 
   return (
-    <section className="product-cards">
-      {products.length > 0 && products.map((prod) => {
-        const { id, name, price, urlImage } = prod;
-
-        return (
-          <div
-            key={ uuidv4() }
-          >
-            <img
-              src={ urlImage }
-              alt={ name }
-              height="100px"
-              data-testid={ `customer_products__img-card-bg-image-${id}` }
-            />
-            <span
-              data-testid={ `customer_products__element-card-title-${id}` }
-            >
-              {name}
-            </span>
-            <span
-              data-testid={ `customer_products__element-card-price-${id}` }
-            >
-              {price.toString().replace('.', ',')}
-            </span>
-            <div className="card-controls">
-              <button
-                name="rm_button"
-                type="button"
-                data-testid={ `customer_products__button-card-rm-item-${id}` }
-                onClick={ (e) => handleButtonChange(e, prod) }
-              >
-                -
-              </button>
-              <input
-                name={ name }
-                type="number"
-                min="0"
-                data-testid={ `customer_products__input-card-quantity-${id}` }
-                onChange={ handleInputsChange }
-                value={ products[(id - 1)]?.quantity } // Puxa os valores dos inputs do carrinho do estado local, todos iniciam com 0, a posição de cada produto é seu ID menos um.
-              />
-              <button
-                name="add_button"
-                type="button"
-                data-testid={ `customer_products__button-card-add-item-${id}` }
-                onClick={ (e) => handleButtonChange(e, prod) }
-              >
-                +
-              </button>
-            </div>
-          </div>
-        );
-      })}
+    <>
+      <Navbar />
       <button
+        data-testid="customer_products__button-cart"
+        name="checkout_button"
         type="button"
+        disabled={ cartBtnDisabled }
         onClick={ () => navigate('/customer/checkout') }
       >
-        Checkout
+        Ver Cainho: R$
+        <span data-testid="customer_products__checkout-bottom-value">
+          {cartTotalPrice.toFixed(2).replace('.', ',')}
+        </span>
       </button>
-    </section>
+      <section className="product-cards">
+        {
+          products.map(({ id, name, price, urlImage }, index) => (
+            <div key={ id }>
+              <h1 data-testid={ `customer_products__element-card-title-${id}` }>
+                {name}
+              </h1>
+              <img
+                src={ urlImage }
+                alt={ name }
+                height="100px"
+                data-testid={ `customer_products__img-card-bg-image-${id}` }
+              />
+              <h3 data-testid={ `customer_products__element-card-price-${id}` }>
+                { `R$${price.toString().replace('.', ',')}` }
+              </h3>
+              <div className="card-controls">
+                <button
+                  data-testid={ `customer_products__button-card-rm-item-${id}` }
+                  onClick={ ({ target }) => buttonHandler(target, index) }
+                  name={ name }
+                  type="button"
+                  value="-"
+                >
+                  -
+                </button>
+                <input
+                  data-testid={ `customer_products__input-card-quantity-${id}` }
+                  type="number"
+                  name={ name }
+                  value={ products[index].quantity }
+                  min="0"
+                  onChange={ ({ target }) => inputNumberHandler(target) }
+                />
+                <button
+                  data-testid={ `customer_products__button-card-add-item-${id}` }
+                  onClick={ ({ target }) => buttonHandler(target, index) }
+                  name={ name }
+                  type="button"
+                  value="+"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          ))
+        }
+      </section>
+    </>
   );
 }
 

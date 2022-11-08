@@ -14,12 +14,6 @@ const header = [
   'Remover Item',
 ];
 
-const mockSellers = [
-  'Apex Legends',
-  'League of Legends',
-  'Age of Empires III',
-];
-
 function Checkout() {
   const { products, setProducts } = useContext(DeliveryContext);
 
@@ -29,10 +23,8 @@ function Checkout() {
   const [numberAddress, setNumberAddress] = useState(0);
 
   useEffect(() => {
-    // const data = request('get', '/users?role="seller"');
-    // setSellers(data);
-    setListSeller(mockSellers);
-    setSeller(mockSellers[0]);
+    const data = request('get', '/users?role="seller"');
+    setListSeller(data);
   }, []);
 
   const total = products.reduce((acc, { price, quantity }) => acc + price * quantity, 0);
@@ -105,7 +97,7 @@ function Checkout() {
           onChange={ ({ target: { value } }) => setSeller(value) }
         >
           {
-            listSeller.map((name) => (
+            listSeller.map(({ name }) => (
               <option key={ name } value={ name }>
                 { name }
               </option>

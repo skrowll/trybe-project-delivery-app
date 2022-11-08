@@ -1,4 +1,4 @@
-const { users, sales } = require('../../database/models');
+const { sales, products, saleProducts } = require('../../database/models');
 const HttpStatus = require('../../utils/HttpStatus');
 const { configAuthorization } = require('../../utils/Auth')
 
@@ -18,4 +18,21 @@ const getSalesBySellerId = async ({ authorization }) => {
   return salesBySellerId;
 };
 
-module.exports = { getSalesBySellerId };
+const getSaleById = async ({ id }) => {
+  const sale = await sales.findOne({
+    where: { id },
+    include:[
+      // {model: products, as: 'products', through: { attributes: [ 'quantity' ] }},
+      { model: saleProducts, as: 'sales' },
+      // { model: products, as: 'products', through: { attributes: [ 'quantity' ] } },
+    ],
+  });
+
+  if (!sale) {
+    throw new Error('Sale not found', { cause: { status: HttpStatus.NOT_FOUND } });
+  }
+
+  return sale;
+};
+
+module.exports = { getSalesBySellerId, getSaleById };

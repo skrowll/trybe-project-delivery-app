@@ -98,14 +98,6 @@ function Products() {
                 >
                   +
                 </button>
-                <button
-                  data-testid={ `customer_products__button-card-add-item-${id}` }
-                  onClick={ (e) => handleButtonChange(e, prod) }
-                  name="add_button"
-                  type="button"
-                >
-                  +
-                </button>
               </div>
             </div>
           ))

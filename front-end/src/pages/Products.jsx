@@ -51,9 +51,12 @@ function Products() {
         name="checkout_button"
         type="button"
         onClick={ () => navigate('/customer/checkout') }
-        data-testid="customer_products__checkout-bottom-value"
+        data-testid="customer_products__button-cart"
       >
-        <span>{cartTotalPrice.toFixed(2).replace('.', ',')}</span>
+        Ver Cainho: R$
+        <span data-testid="customer_products__checkout-bottom-value">
+          {cartTotalPrice.toFixed(2).replace('.', ',')}
+        </span>
       </button>
       <section className="product-cards">
         {

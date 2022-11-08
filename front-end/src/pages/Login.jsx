@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { requestLogin, setToken } from '../services/requests';
+import { request, setToken } from '../services/requests';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -40,11 +40,12 @@ export default function Login() {
   const login = async (event) => {
     event.preventDefault();
     try {
-      const { token, role, name, email } = await requestLogin('/login', loginInputs);
+      const {
+        id, token, role, name, email } = await request('post', '/login', loginInputs);
 
       setToken(token);
 
-      localStorage.setItem('user', JSON.stringify({ name, email, role, token }));
+      localStorage.setItem('user', JSON.stringify({ id, name, email, role, token }));
 
       if (role === 'customer') {
         navigate('/customer/products');

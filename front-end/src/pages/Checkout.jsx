@@ -1,9 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-
+import { useContext } from 'react';
 import DeliveryContext from '../context/DeliveryContext';
 import Navbar from '../components/Navbar';
-// import { request } from '../services/requests';
+import CardAdressDetails from '../components/CardAdressDetails';
 
 const header = [
   'Item',
@@ -15,22 +13,12 @@ const header = [
 ];
 
 function Checkout() {
-  const { products, setProducts } = useContext(DeliveryContext);
-
-  const [listSeller, setListSeller] = useState([]);
-  const [seller, setSeller] = useState(listSeller[0]);
-  const [address, setAddress] = useState('');
-  const [numberAddress, setNumberAddress] = useState(0);
-
-  useEffect(() => {
-    const data = request('get', '/users?role="seller"');
-    setListSeller(data);
-  }, []);
-
-  const total = products.reduce((acc, { price, quantity }) => acc + price * quantity, 0);
+  // const { products, setProducts } = useContext(DeliveryContext);
+  const {
+    functions: { setCart },
+    values: { cart, cartTotalPrice } } = useContext(DeliveryContext);
 
   const removeItem = (id, list) => list.filter(({ id: idFilter }) => idFilter !== id);
-
   const createListTable = (({ id, name, quantity, price }, index) => (
     <>
       <td data-testid={ `customer_checkout__element-order-table-item-number-${index}` }>
@@ -52,12 +40,11 @@ function Checkout() {
         <input
           type="button"
           value="remover"
-          onClick={ () => setProducts(removeItem(id, products)) }
+          onClick={ () => setCart(removeItem(id, cart)) }
         />
       </td>
     </>
   ));
-
   return (
     <>
       <Navbar />
@@ -75,7 +62,7 @@ function Checkout() {
           </thead>
           <tbody>
             {
-              products.map((product, index) => (
+              cart.map((product, index) => (
                 <tr key={ index }>
                   { createListTable(product, index) }
                 </tr>
@@ -84,47 +71,11 @@ function Checkout() {
           </tbody>
         </table>
         <span data-testid="customer_checkout__element-order-total-price">
-          { `Total: R$${(total).toFixed(2)}` }
+          { `Total: R$${(cartTotalPrice).toFixed(2)}` }
         </span>
       </fieldset>
-      <h2>Detalhe e Endereço para Entrega</h2>
-      <fieldset>
-        <span>Vendedor(a)</span>
-        <select
-          data-testid="customer_checkout__select-seller"
-          id="sellers"
-          name="sellers"
-          onChange={ ({ target: { value } }) => setSeller(value) }
-        >
-          {
-            listSeller.map(({ name }) => (
-              <option key={ name } value={ name }>
-                { name }
-              </option>
-            ))
-          }
-        </select>
-        <span>Endereço</span>
-        <input
-          data-testid="customer_checkout__input-address"
-          type="text"
-          value={ address }
-          onChange={ ({ target: { value } }) => setAddress(value) }
-        />
-        <span>Número</span>
-        <input
-          data-testid="customer_checkout__input-address-number"
-          type="number"
-          value={ numberAddress }
-          onChange={ ({ target: { value } }) => setNumberAddress(value) }
-        />
-        <input type="button" value="Finalizar Pedido" />
-      </fieldset>
-      <span>
-        { seller }
-      </span>
+      <CardAdressDetails />
     </>
   );
 }
-
 export default Checkout;

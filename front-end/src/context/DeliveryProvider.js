@@ -1,19 +1,27 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import DeliveryContext from './DeliveryContext';
 
 function DeliveryProvider({ children }) {
-  const [products, setProducts] = useState([]);
+  const [cartTotalPrice, setCartTotalPrice] = useState(0);
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    setCartTotalPrice(cart
+      .reduce((acc, { quantity, price }) => (
+        acc + quantity * +price
+      ), 0));
+
+    localStorage.setItem('carrinho', JSON.stringify(cart));
+  }, [cart]);
 
   const providerContext = useMemo(() => ({
-    products,
-    setProducts,
-  }), [products]);
+    values: { cart, cartTotalPrice },
+    functions: { setCart },
+  }), [cart, cartTotalPrice]);
 
   return (
-    <DeliveryContext.Provider
-      value={ providerContext }
-    >
+    <DeliveryContext.Provider value={ providerContext }>
       {children}
     </DeliveryContext.Provider>
   );

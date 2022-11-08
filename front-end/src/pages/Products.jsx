@@ -14,6 +14,7 @@ function Products() {
   } = useContext(DeliveryContext);
 
   const [products, setProducts] = useState([]);
+  const [cartBtnDisabled, setCartBtnDisabled] = useState(true);
 
   useEffect(() => request('get', '/customer/products')
     .then((data) => {
@@ -22,7 +23,9 @@ function Products() {
 
   useEffect(() => {
     const wereFound = products.filter(({ quantity }) => quantity > 0);
+
     setCart(wereFound);
+    setCartBtnDisabled(!wereFound.length);
   }, [products, setCart]);
 
   const inputNumberHandler = ({ name, value }) => {
@@ -48,10 +51,11 @@ function Products() {
     <>
       <Navbar />
       <button
+        data-testid="customer_products__button-cart"
         name="checkout_button"
         type="button"
+        disabled={ cartBtnDisabled }
         onClick={ () => navigate('/customer/checkout') }
-        data-testid="customer_products__button-cart"
       >
         Ver Cainho: R$
         <span data-testid="customer_products__checkout-bottom-value">

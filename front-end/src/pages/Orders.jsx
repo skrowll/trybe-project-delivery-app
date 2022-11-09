@@ -1,16 +1,12 @@
 import { useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import OrderCard from '../components/OrderCard';
 import DeliveryContext from '../context/DeliveryContext';
 import { request } from '../services/requests';
 
-const orders = [
-  { id: 1, totalPrice: 20, saleDate: '08/04/21', status: 'Pendente' },
-  { id: 2, totalPrice: 40, saleDate: '07/04/21', status: 'Preparando' },
-];
-
 function Orders() {
-  const { setOrders } = useContext(DeliveryContext);
+  const { orders, setOrders } = useContext(DeliveryContext);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -26,11 +22,9 @@ function Orders() {
       <section>
         {
           orders.map((order) => (
-            <div
-              key={ order.id }
-            >
+            <Link to={ `/customer/orders/${order.id}` } key={ order.id }>
               <OrderCard order={ order } />
-            </div>
+            </Link>
           ))
         }
       </section>

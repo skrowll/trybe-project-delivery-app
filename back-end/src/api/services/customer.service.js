@@ -28,7 +28,7 @@ const createOrder = async (saleInfo) => {
 const getOrders = async () => {
   const orders = await sales.findAll();
   return orders;
-}
+};
 
 module.exports = {
   customerPath,

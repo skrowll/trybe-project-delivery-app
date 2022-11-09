@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { request } from '../services/requests';
+import { request, setToken } from '../services/requests';
 
 import DeliveryContext from '../context/DeliveryContext';
 import Navbar from '../components/Navbar';
@@ -16,10 +16,17 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [cartBtnDisabled, setCartBtnDisabled] = useState(true);
 
-  useEffect(() => request('get', '/customer/products')
-    .then((data) => {
-      setProducts(data.map((e) => { e.quantity = 0; return e; }));
-    }), []);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { token } = JSON.parse(localStorage.getItem('user'));
+      setToken(token);
+      const productsList = await request('get', '/customer/products');
+      const productsWithQuantity = productsList
+        .map((e) => { e.quantity = 0; return e; });
+      setProducts(productsWithQuantity);
+    };
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const wereFound = products.filter(({ quantity }) => quantity > 0);

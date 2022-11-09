@@ -3,7 +3,7 @@ const HttpStatus = require('../../utils/HttpStatus');
 
 const errorMessage = 'Token must be a valid token';
 
-const validateToken = (req, _res, next) => {
+const validateAdminToken = (req, _res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization) throw new Error(errorMessage, { cause: { status: HttpStatus.UNAUTHORIZED } });
@@ -20,4 +20,17 @@ const validateToken = (req, _res, next) => {
   next();
 };
 
-module.exports = validateToken;
+const validateCustomerToken = (req, res, next) => {
+  const { authorization } = req.headers;
+  if (!authorization) throw new Error(errorMessage, { cause: { status: HttpStatus.UNAUTHORIZED } });
+  try {
+    const { data: { user } } = configAuthorization.verifyAuth(authorization);
+    res.locals.user = user;
+    next();
+  } catch (error) {
+    console.log(error);
+    throw new Error(errorMessage, { cause: { status: HttpStatus.UNAUTHORIZED } });
+  }
+};
+
+module.exports = { validateAdminToken, validateCustomerToken };

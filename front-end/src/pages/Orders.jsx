@@ -21,7 +21,7 @@ function Orders() {
   return (
     <main>
       <Navbar />
-      <section>
+      <section style={ { display: 'flex', gap: '10px', justifyContent: 'flex-start' } }>
         {
           orders.map((order) => (
             <Link to={ `/customer/orders/${order.id}` } key={ order.id }>

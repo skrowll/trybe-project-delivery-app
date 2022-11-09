@@ -16,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.STRING,
-      defaultValue: 'Pendente'
-    },
+      defaultValue: 'Pendente',
+    }
   }, {
     underscored: true,
     tableName: 'sales',

@@ -19,15 +19,21 @@ const createOrder = async (saleInfo) => {
     totalPrice: saleInfo.totalPrice,
     deliveryAddress: saleInfo.deliveryAddress,
     deliveryNumber: saleInfo.deliveryNumber,
-    status: 'Pendente',
+    // status: 'Pendente',
   });
 
   console.log(order);
 };
 
+const getOrders = async () => {
+  const orders = await sales.findAll();
+  return orders;
+}
+
 module.exports = {
   customerPath,
   createOrder,
+  getOrders,
 };
 
 /**

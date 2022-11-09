@@ -27,7 +27,13 @@ const createOrder = async ({ sale, cart }) => {
   return newSale.id;
 };
 
+const getOrders = async () => {
+  const orders = await sales.findAll();
+  return orders;
+}
+
 module.exports = {
   customerPath,
   createOrder,
+  getOrders,
 };

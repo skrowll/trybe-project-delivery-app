@@ -9,11 +9,10 @@ export default function Login() {
     password: '',
   });
   const [isButtonDisabled, setDisabled] = useState(true);
-  const [isLogged, setIsLogged] = useState(false);
+  const [failedLogin, setFailedLogin] = useState(false);
 
   useEffect(() => {
     const MIN_PASSWORD_LENGTH = 6;
-    // const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.([a-z]+)?$/i;
     const emailRegex = /^[a-z0-9._]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i;
 
     const isEmailValid = emailRegex.test(loginInputs.email);
@@ -37,8 +36,7 @@ export default function Login() {
     }));
   };
 
-  const login = async (event) => {
-    event.preventDefault();
+  const login = async () => {
     try {
       const { token, role, name, email } = await requestLogin('/login', loginInputs);
 
@@ -46,23 +44,18 @@ export default function Login() {
 
       localStorage.setItem('user', JSON.stringify({ name, email, role, token }));
 
-      if (role === 'customer') {
-        navigate('/customer/products');
-      }
-      if (role === 'seller') {
-        navigate('/seller/orders');
-      }
-      if (role === 'administrator') {
-        navigate('/admin/manage');
-      }
+      if (role === 'customer') navigate('/customer/products');
+      if (role === 'seller') navigate('/seller/orders');
+      if (role === 'administrator') navigate('/admin/manage');
     } catch (error) {
-      setIsLogged(true);
+      setFailedLogin(true);
     }
   };
 
   useEffect(() => {
     const userLogged = JSON.parse(localStorage.getItem('user'));
-    if (userLogged) navigate('/customer/products');
+    if (userLogged?.role === 'customer') navigate('/customer/products');
+    if (userLogged?.role === 'seller') navigate('/seller/orders');
   });
 
   return (
@@ -87,7 +80,7 @@ export default function Login() {
           />
           <button
             type="button"
-            onClick={ (event) => login(event) }
+            onClick={ login }
             data-testid="common_login__button-login"
             disabled={ isButtonDisabled }
           >
@@ -101,7 +94,7 @@ export default function Login() {
             <span>Ainda não tenho conta</span>
           </button>
           <div
-            style={ { display: (isLogged ? 'block' : 'none') } }
+            style={ { display: (failedLogin ? 'block' : 'none') } }
             data-testid="common_login__element-invalid-email"
           >
             Email ou senha incorretos

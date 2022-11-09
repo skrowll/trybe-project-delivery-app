@@ -7,9 +7,8 @@ import Manage from './pages/Manage';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import Details from './pages/Details';
-import CustomerOrders from './pages/CustomerOrders';
-import './App.css';
 import PrivateRoute from './components/PrivateRoute';
+import './App.css';
 
 function App() {
   return (
@@ -17,7 +16,7 @@ function App() {
       <Route element={ <PrivateRoute /> }>
         <Route path="/customer/products" element={ <Products /> } />
         <Route path="/customer/checkout" element={ <Checkout /> } />
-        <Route path="/customer/orders" element={ <CustomerOrders /> } />
+        <Route path="/customer/orders" element={ <Orders /> } />
         <Route path="/admin/manage" element={ <Manage /> } />
         <Route path="/seller/orders" element={ <Orders /> } />
         <Route path="/seller/orders/:id" element={ <Details /> } />

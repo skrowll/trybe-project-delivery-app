@@ -20,7 +20,7 @@ const validateAdminToken = (req, _res, next) => {
   next();
 };
 
-const validateCustomerToken = (req, res, next) => {
+const validateToken = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) throw new Error(errorMessage, { cause: { status: HttpStatus.UNAUTHORIZED } });
   try {
@@ -33,4 +33,4 @@ const validateCustomerToken = (req, res, next) => {
   }
 };
 
-module.exports = { validateAdminToken, validateCustomerToken };
+module.exports = { validateAdminToken, validateToken };

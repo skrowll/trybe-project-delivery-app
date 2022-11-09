@@ -17,7 +17,7 @@ const createOrder = async (req, res) => {
 const getOrders = async (req, res) => {
   const orders = await customerService.getOrders();
   return res.status(HttpStatus.OK).json(orders);
-}
+};
 
 module.exports = {
   customerPath,

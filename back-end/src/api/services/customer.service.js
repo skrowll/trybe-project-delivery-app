@@ -30,7 +30,7 @@ const createOrder = async ({ sale, cart }) => {
 const getOrders = async () => {
   const orders = await sales.findAll();
   return orders;
-}
+};
 
 module.exports = {
   customerPath,

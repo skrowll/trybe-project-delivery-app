@@ -5,7 +5,7 @@ import DeliveryContext from './DeliveryContext';
 function DeliveryProvider({ children }) {
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
   const [cart, setCart] = useState([]);
-  const [sales, setSales] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     setCartTotalPrice(cart
@@ -17,9 +17,9 @@ function DeliveryProvider({ children }) {
   }, [cart]);
 
   const providerContext = useMemo(() => ({
-    values: { cart, cartTotalPrice, sales },
-    functions: { setCart, setSales },
-  }), [cart, cartTotalPrice, sales]);
+    values: { cart, cartTotalPrice, orders },
+    functions: { setCart, setOrders },
+  }), [cart, cartTotalPrice, orders]);
 
   return (
     <DeliveryContext.Provider value={ providerContext }>

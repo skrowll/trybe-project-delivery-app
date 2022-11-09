@@ -1,70 +1,44 @@
-import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import OrderCard from '../components/OrderCard';
+import DeliveryContext from '../context/DeliveryContext';
 import { setToken, request } from '../services/requests';
 
 function Orders() {
-  const [sellerSales, setSellerSales] = useState([]);
+  const { values: { orders }, functions: { setOrders } } = useContext(DeliveryContext);
+  const { token, role } = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
-    const { token } = JSON.parse(localStorage.getItem('user'));
     setToken(token);
+    const url = role === 'customer' ? '/customer/orders' : '/seller/orders';
     const requestData = async () => {
-      const data = await request('get', '/seller/orders');
-      setSellerSales(data);
+      const data = await request('get', url);
+      setOrders(data);
     };
     requestData();
-  }, []);
-
-  const convertDate = (prevDate) => prevDate.split('T')[0].split('-').reverse().join('/');
+  }, [setOrders, token, role]);
 
   return (
-    <section>
-      {sellerSales.map((sale) => {
-        const {
-          id,
-          status,
-          totalPrice,
-          saleDate,
-          deliveryAddress,
-          deliveryNumber,
-        } = sale;
-
-        return (
-          <a
-            key={ uuidv4() }
-            href={ `http://localhost:3000/seller/orders/${id}` }
-          >
-            <div>
-              <span
-                data-testid={ `seller_orders__element-order-id-${id}` }
-              >
-                { `Pedido ${id}` }
-              </span>
-              <span
-                data-testid={ `seller_orders__element-delivery-status-${id}` }
-              >
-                { status }
-              </span>
-              <span
-                data-testid={ `seller_orders__element-card-price-${id}` }
-              >
-                { totalPrice }
-              </span>
-              <span
-                data-testid={ `seller_orders__element-order-date-${id}` }
-              >
-                { convertDate(saleDate) }
-              </span>
-              <span
-                data-testid={ `seller_orders__element-card-address-${id}` }
-              >
-                { `${deliveryAddress}, ${deliveryNumber}` }
-              </span>
-            </div>
-          </a>
-        );
-      })}
-    </section>
+    <main>
+      <Navbar />
+      <section style={ { display: 'flex', gap: '10px', justifyContent: 'flex-start' } }>
+        {
+          orders.map((order) => (
+            <Link
+              to={
+                role === 'customer'
+                  ? `/customer/orders/${order.id}`
+                  : `/seller/orders/${order.id}`
+              }
+              key={ order.id }
+            >
+              <OrderCard order={ order } role={ role } />
+            </Link>
+          ))
+        }
+      </section>
+    </main>
   );
 }
 

@@ -6,7 +6,7 @@ import DeliveryContext from '../context/DeliveryContext';
 import { request } from '../services/requests';
 
 function Orders() {
-  const { orders, setOrders } = useContext(DeliveryContext);
+  const { values: { orders }, functions: { setOrders } } = useContext(DeliveryContext);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -16,12 +16,14 @@ function Orders() {
     fetchOrders();
   }, [setOrders]);
 
+  console.log(orders);
+
   return (
     <main>
       <Navbar />
       <section>
         {
-          orders.map((order) => (
+          orders?.map((order) => (
             <Link to={ `/customer/orders/${order.id}` } key={ order.id }>
               <OrderCard order={ order } />
             </Link>

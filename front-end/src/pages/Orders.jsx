@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import OrderCard from '../components/OrderCard';
 import DeliveryContext from '../context/DeliveryContext';
-import { request } from '../services/requests';
+import { request, setToken } from '../services/requests';
 
 function Orders() {
   const { values: { orders }, functions: { setOrders } } = useContext(DeliveryContext);
 
   useEffect(() => {
     const fetchOrders = async () => {
+      const { token } = JSON.parse(localStorage.getItem('user'));
+      setToken(token);
       const orderList = await request('get', 'customer/orders');
       setOrders(orderList);
     };

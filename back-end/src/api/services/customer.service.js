@@ -27,8 +27,8 @@ const createOrder = async ({ sale, cart }) => {
   return newSale.id;
 };
 
-const getOrders = async () => {
-  const orders = await sales.findAll();
+const getOrders = async (userId) => {
+  const orders = await sales.findAll({ where: { userId } });
   return orders;
 };
 

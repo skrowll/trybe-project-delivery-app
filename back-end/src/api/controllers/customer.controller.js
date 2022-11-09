@@ -15,7 +15,8 @@ const createOrder = async (req, res) => {
 };
 
 const getOrders = async (req, res) => {
-  const orders = await customerService.getOrders();
+  const userId = res.locals.user.id;
+  const orders = await customerService.getOrders(userId);
   return res.status(HttpStatus.OK).json(orders);
 };
 

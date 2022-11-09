@@ -23,7 +23,7 @@ function Orders() {
       <Navbar />
       <section>
         {
-          orders?.map((order) => (
+          orders.map((order) => (
             <Link to={ `/customer/orders/${order.id}` } key={ order.id }>
               <OrderCard order={ order } />
             </Link>

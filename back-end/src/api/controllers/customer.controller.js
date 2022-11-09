@@ -15,7 +15,14 @@ const createOrder = async (req, _res) => {
   // return res.status(HttpStatus.CREATED).json(order);
 };
 
+const getOrders = async (req, res) => {
+  const userId = res.locals.user.id;
+  const orders = await customerService.getOrders(userId);
+  return res.status(HttpStatus.OK).json(orders);
+};
+
 module.exports = {
   customerPath,
   createOrder,
+  getOrders,
 };

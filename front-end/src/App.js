@@ -7,16 +7,19 @@ import Manage from './pages/Manage';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import './App.css';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
     <Routes>
-      <Route path="/register" element={ <Register /> } />
-      <Route path="/customer/products" element={ <Products /> } />
-      <Route path="/customer/checkout" element={ <Checkout /> } />
-      <Route path="/customer/orders" element={ <Orders /> } />
-      <Route path="/admin/manage" element={ <Manage /> } />
+      <Route element={ <PrivateRoute /> }>
+        <Route path="/customer/products" element={ <Products /> } />
+        <Route path="/customer/checkout" element={ <Checkout /> } />
+        <Route path="/customer/orders" element={ <Orders /> } />
+        <Route path="/admin/manage" element={ <Manage /> } />
+      </Route>
       <Route path="/login" element={ <Login /> } />
+      <Route path="/register" element={ <Register /> } />
       <Route exact path="/" element={ <Navigate to="/login" replace /> } />
     </Routes>
   );

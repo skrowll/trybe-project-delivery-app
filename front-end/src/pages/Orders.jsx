@@ -16,8 +16,6 @@ function Orders() {
     fetchOrders();
   }, [setOrders]);
 
-  console.log(orders);
-
   return (
     <main>
       <Navbar />

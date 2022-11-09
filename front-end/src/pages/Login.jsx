@@ -61,6 +61,11 @@ export default function Login() {
     }
   };
 
+  useEffect(() => {
+    const userLogged = JSON.parse(localStorage.getItem('user'));
+    if (userLogged) navigate('/customer/products');
+  });
+
   return (
     <section className="login-section">
       <div className="login-modal">

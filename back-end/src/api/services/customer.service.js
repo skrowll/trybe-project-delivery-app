@@ -25,8 +25,8 @@ const createOrder = async (saleInfo) => {
   console.log(order);
 };
 
-const getOrders = async () => {
-  const orders = await sales.findAll();
+const getOrders = async (userId) => {
+  const orders = await sales.findAll({ where: { userId } });
   return orders;
 };
 

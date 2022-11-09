@@ -5,7 +5,7 @@ import OrderCard from '../components/OrderCard';
 import DeliveryContext from '../context/DeliveryContext';
 import { request, setToken } from '../services/requests';
 
-function Orders() {
+function CustomerOrders() {
   const { values: { orders }, functions: { setOrders } } = useContext(DeliveryContext);
 
   useEffect(() => {
@@ -34,4 +34,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default CustomerOrders;

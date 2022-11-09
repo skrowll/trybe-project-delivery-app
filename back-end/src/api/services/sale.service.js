@@ -1,4 +1,4 @@
-const { sales, products, saleProducts } = require('../../database/models');
+const { sales, products } = require('../../database/models');
 const HttpStatus = require('../../utils/HttpStatus');
 const { configAuthorization } = require('../../utils/Auth');
 
@@ -21,8 +21,8 @@ const getSalesBySellerId = async ({ authorization }) => {
 const getSaleById = async ({ id }) => {
   const sale = await sales.findOne({
     where: { id },
-    include:[
-      { model: products, as: 'products', through: { attributes: [ 'quantity' ] } },
+    include: [
+      { model: products, as: 'products', through: { attributes: ['quantity'] } },
     ],
   });
 

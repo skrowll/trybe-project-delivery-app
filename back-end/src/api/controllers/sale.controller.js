@@ -16,7 +16,7 @@ const getSaleById = async (req, res, next) => {
     return res.status(HttpStatus.OK).json(result);
   } catch (error) {
     next(error);
-  };
+  }
 };
 
 module.exports = { getSalesBySellerId, getSaleById };

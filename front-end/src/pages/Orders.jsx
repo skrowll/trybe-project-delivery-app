@@ -15,12 +15,10 @@ function Orders() {
     requestData();
   }, []);
 
-  useEffect(() => {
-    console.log('SALES', sellerSales);
-  }, [sellerSales]);
+  const convertDate = (prevDate) => prevDate.split('T')[0].split('-').reverse().join('/');
 
   return (
-    <section className="sales-cards">
+    <section>
       {sellerSales.map((sale) => {
         const {
           id,
@@ -55,7 +53,7 @@ function Orders() {
               <span
                 data-testid={ `seller_orders__element-order-date-${id}` }
               >
-                { saleDate }
+                { convertDate(saleDate) }
               </span>
               <span
                 data-testid={ `seller_orders__element-card-address-${id}` }

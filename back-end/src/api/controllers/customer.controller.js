@@ -15,14 +15,21 @@ const createOrder = async (req, _res) => {
   // return res.status(HttpStatus.CREATED).json(order);
 };
 
-const getOrders = async (req, res) => {
+const getOrders = async (_req, res) => {
   const userId = res.locals.user.id;
   const orders = await customerService.getOrders(userId);
   return res.status(HttpStatus.OK).json(orders);
+};
+
+const getOrderById = async (req, res) => {
+  const { id } = req.params;
+  const order = await customerService.getOrderById(id);
+  return res.status(HttpStatus.OK).json(order);
 };
 
 module.exports = {
   customerPath,
   createOrder,
   getOrders,
+  getOrderById,
 };

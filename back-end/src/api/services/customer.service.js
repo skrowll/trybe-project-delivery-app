@@ -1,5 +1,5 @@
 const HttpStatus = require('../../utils/HttpStatus');
-const { products, sales } = require('../../database/models');
+const { products, sales, users } = require('../../database/models');
 
 const customerPath = async () => {
   const getProducts = await products.findAll();
@@ -30,10 +30,23 @@ const getOrders = async (userId) => {
   return orders;
 };
 
+const getOrderById = async (id) => {
+  const order = await sales.findOne({
+    where: { id },
+    include: [
+      { model: products, as: 'products', through: { attributes: ['quantity'] } },
+      { model: users, as: 'seller', attributes: ['name'] },
+    ],
+  });
+  if (!order) throw new Error('Order not found', { cause: { status: HttpStatus.NOT_FOUND } });
+  return order;
+};
+
 module.exports = {
   customerPath,
   createOrder,
   getOrders,
+  getOrderById,
 };
 
 /**

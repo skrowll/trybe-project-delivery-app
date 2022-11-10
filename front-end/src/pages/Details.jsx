@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import DetailsHeader from '../components/DetailsHeader';
 import OrderedProductsDetails from '../components/OrderedProductsDetails';
 import { request, setToken } from '../services/requests';
+import Navbar from '../components/Navbar';
 
 const dataTestIds = {
   totalPrice: 'seller_order_details__element-order-total-price',
@@ -33,7 +34,9 @@ function Details() {
   }, [id, token, role, setOrder]);
 
   return (
+
     <section>
+      <Navbar />
       <h1>Detalhe do Pedido</h1>
       <div>
         <DetailsHeader order={ order } role={ role } />

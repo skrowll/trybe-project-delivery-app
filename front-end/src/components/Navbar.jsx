@@ -4,12 +4,11 @@ import { Link, useNavigate } from 'react-router-dom';
 function Navbar() {
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
+  const { name, role } = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
-    const userJSON = localStorage.getItem('user');
-    const userProfile = JSON.parse(userJSON);
-    setUsername(userProfile.name);
-  }, []);
+    setUsername(name);
+  }, [name]);
 
   const loggoutUser = () => {
     localStorage.removeItem('user');
@@ -20,18 +19,20 @@ function Navbar() {
     <nav className="navbar">
       <div className="delivery-menu-options">
         <ul>
-          <Link to="/customer/products">
-            <li
-              data-testid="customer_products__element-navbar-link-products"
-            >
-              PRODUTOS
-            </li>
-          </Link>
+          {role === 'customer' && (
+            <Link to="/customer/products">
+              <li
+                data-testid="customer_products__element-navbar-link-products"
+              >
+                PRODUTOS
+              </li>
+            </Link>
+          )}
           <Link to="/customer/orders">
             <li
               data-testid="customer_products__element-navbar-link-orders"
             >
-              MEUS PEDIDOS
+              {role === 'customer' ? 'MEUS PEDIDOS' : 'PEDIDOS'}
             </li>
           </Link>
         </ul>

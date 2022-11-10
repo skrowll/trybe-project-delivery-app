@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
-function OrderCard({ order }) {
-  const { id, totalPrice, saleDate, status } = order;
+function OrderCard({ order, role }) {
+  const { id, totalPrice, saleDate, status, deliveryAddress, deliveryNumber } = order;
 
   const date = new Date(saleDate).toLocaleDateString();
 
@@ -26,6 +26,14 @@ function OrderCard({ order }) {
           { `R$ ${Number(totalPrice)}` }
         </p>
       </div>
+      { role === 'seller'
+        && (
+          <div
+            data-testid={ `seller_orders__element-card-address-${id}` }
+          >
+            { `${deliveryAddress}, ${deliveryNumber}` }
+          </div>
+        )}
     </div>
   );
 }
@@ -36,7 +44,10 @@ OrderCard.propTypes = {
     totalPrice: PropTypes.string,
     saleDate: PropTypes.string,
     status: PropTypes.string,
+    deliveryAddress: PropTypes.string,
+    deliveryNumber: PropTypes.string,
   }).isRequired,
+  role: PropTypes.string.isRequired,
 };
 
 export default OrderCard;

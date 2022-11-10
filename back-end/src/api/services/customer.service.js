@@ -22,6 +22,7 @@ const createOrder = async ({ sale, cart }) => {
     await salesProducts.bulkCreate(saleProduct, { transaction });
 
     return order;
+
   });
 
   return newSale.id;

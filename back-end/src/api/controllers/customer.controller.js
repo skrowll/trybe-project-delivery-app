@@ -20,6 +20,12 @@ const getOrders = async (req, res) => {
   return res.status(HttpStatus.OK).json(orders);
 };
 
+const getOrders = async (req, res) => {
+  const userId = res.locals.user.id;
+  const orders = await customerService.getOrders(userId);
+  return res.status(HttpStatus.OK).json(orders);
+};
+
 module.exports = {
   customerPath,
   createOrder,

@@ -1,6 +1,5 @@
 const { sales, products } = require('../../database/models');
 const HttpStatus = require('../../utils/HttpStatus');
-const { configAuthorization } = require('../../utils/Auth');
 
 const getSalesBySellerId = async (sellerId) => {
   const salesBySellerId = await sales.findAll({ where: { sellerId } });

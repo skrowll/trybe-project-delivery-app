@@ -1,15 +1,8 @@
 import PropTypes from 'prop-types';
-
-const dataTestIds = {
-  orderId: 'seller_order_details__element-order-details-label-order-id',
-  deliveryStatus: 'seller_order_details__element-order-details-label-delivery-status',
-  orderDate: 'seller_order_details__element-order-details-label-order-date',
-  preparingCheck: 'seller_order_details__button-preparing-check',
-  dispatchCheck: 'seller_order_details__button-dispatch-check',
-};
+import dataTestIds from '../utils/dataTestIds';
 
 function DetailsHeader({ order, role }) {
-  const { id, saleDate, status } = order;
+  const { id, saleDate, status, seller } = order;
 
   const date = new Date(saleDate).toLocaleDateString();
 
@@ -25,7 +18,7 @@ function DetailsHeader({ order, role }) {
       }
     >
       <span data-testid={ dataTestIds.orderId }>{ `Pedido ${id}` }</span>
-      { role === 'customer' && <span>nome do vendedor</span>}
+      { role === 'customer' && <span>{seller.name}</span>}
       <span data-testid={ dataTestIds.orderDate }>{ date }</span>
       <span data-testid={ dataTestIds.deliveryStatus }>{ status }</span>
       <span>
@@ -53,6 +46,9 @@ DetailsHeader.propTypes = {
     id: PropTypes.number,
     saleDate: PropTypes.string,
     status: PropTypes.string,
+    seller: PropTypes.shape({
+      name: PropTypes.string,
+    }),
   }).isRequired,
   role: PropTypes.string.isRequired,
 };

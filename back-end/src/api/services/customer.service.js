@@ -1,5 +1,5 @@
 const HttpStatus = require('../../utils/HttpStatus');
-const { products, sales, users } = require('../../database/models');
+const { products, sales, users, salesProducts, sequelize } = require('../../database/models');
 
 const customerPath = async () => {
   const getProducts = await products.findAll();
@@ -11,18 +11,19 @@ const customerPath = async () => {
   return getProducts;
 };
 
-const createOrder = async (saleInfo) => {
-  // TypeError: Cannot read properties of undefined (reading 'status')
-  const order = await sales.create({
-    userId: saleInfo.userId,
-    sellerId: saleInfo.sellerId,
-    totalPrice: saleInfo.totalPrice,
-    deliveryAddress: saleInfo.deliveryAddress,
-    deliveryNumber: saleInfo.deliveryNumber,
-    // status: 'Pendente',
-  });
+const createOrder = async ({ sale, cart }, userId) => {
+  const newSale = await sequelize.transaction(async (transaction) => {
+    const order = await sales.create({ ...sale, userId }, { transaction });
 
-  console.log(order);
+    const saleProduct = await cart.map((p) => (
+      { saleId: order.id, productId: p.id, quantity: p.quantity }
+    ));
+
+    await salesProducts.bulkCreate(saleProduct, { transaction });
+    
+    return order;
+  });
+  return newSale.id;
 };
 
 const getOrders = async (userId) => {
@@ -48,23 +49,3 @@ module.exports = {
   getOrders,
   getOrderById,
 };
-
-/**
-pedido: {
-  venda: *detalhes da venda*,
-  produtos: [{}, {}, ...]
-}
-
-  // const produtos = saleInfo.products;
-  const venda = saleInfo.sale;
-
-  await Promise.all(produtos.map(async (product) => {
-      await salesProducts.create({ 
-        saleId: order.id,
-        productId: product.id,
-        quantity: product.quantity,
-      });
-    }));
-
-  // return order;
- */

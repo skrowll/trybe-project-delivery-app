@@ -21,7 +21,7 @@ const loginUser = async ({ password, email }) => {
     throw new Error('Invalid token', { cause: { status: HttpStatus.BAD_REQUEST } });
   }
 
-  return { name: user.name, email: user.email, role: user.role, token };
+  return { id: user.id, name: user.name, email: user.email, role: user.role, token };
 };
 
 module.exports = {

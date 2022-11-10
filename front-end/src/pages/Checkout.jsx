@@ -1,33 +1,14 @@
-import { useContext, useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-
+import { useContext } from 'react';
 import DeliveryContext from '../context/DeliveryContext';
-import Navbar from '../components/Navbar';
-// import { request } from '../services/requests';
 
-const header = [
-  'Item',
-  'Descrição',
-  'Quantidade',
-  'Valor Unitário',
-  'Sub-total',
-  'Remover Item',
-];
+import Navbar from '../components/Navbar';
+import CardAdressDetails from '../components/CardAdressDetails';
+import CardOrders from '../components/CardOrders';
 
 function Checkout() {
-  const { products, setProducts } = useContext(DeliveryContext);
-
-  const [listSeller, setListSeller] = useState([]);
-  const [seller, setSeller] = useState(listSeller[0]);
-  const [address, setAddress] = useState('');
-  const [numberAddress, setNumberAddress] = useState(0);
-
-  useEffect(() => {
-    const data = request('get', '/users?role="seller"');
-    setListSeller(data);
-  }, []);
-
-  const total = products.reduce((acc, { price, quantity }) => acc + price * quantity, 0);
+  const {
+    functions: { setCart },
+    values: { cart, cartTotalPrice } } = useContext(DeliveryContext);
 
   const removeItem = (id, list) => list.filter(({ id: idFilter }) => idFilter !== id);
 
@@ -43,88 +24,41 @@ function Checkout() {
         { quantity }
       </td>
       <td data-testid={ `customer_checkout__element-order-table-unit-price-${index}` }>
-        { `R$${price}` }
+        { price.replace('.', ',') }
       </td>
       <td data-testid={ `customer_checkout__element-order-table-sub-total-${index}` }>
-        { `R$${(price * quantity).toFixed(2)}` }
+        {/* { `R$${(price * quantity).toFixed(2)}` } */}
+        { (price * quantity).toFixed(2).replace('.', ',') }
       </td>
       <td data-testid={ `customer_checkout__element-order-table-remove-${index}` }>
         <input
           type="button"
           value="remover"
-          onClick={ () => setProducts(removeItem(id, products)) }
+          onClick={ () => setCart(removeItem(id, cart)) }
         />
       </td>
     </>
   ));
 
   return (
-    <>
+    <div>
       <Navbar />
       <h1>Finalizar Pedido</h1>
-      <fieldset>
-        <table>
-          <thead>
-            <tr>
-              {
-                header.map((name) => (
-                  <th key={ name }>{ name }</th>
-                ))
-              }
-            </tr>
-          </thead>
-          <tbody>
-            {
-              products.map((product, index) => (
-                <tr key={ index }>
-                  { createListTable(product, index) }
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-        <span data-testid="customer_checkout__element-order-total-price">
-          { `Total: R$${(total).toFixed(2)}` }
-        </span>
-      </fieldset>
-      <h2>Detalhe e Endereço para Entrega</h2>
-      <fieldset>
-        <span>Vendedor(a)</span>
-        <select
-          data-testid="customer_checkout__select-seller"
-          id="sellers"
-          name="sellers"
-          onChange={ ({ target: { value } }) => setSeller(value) }
-        >
-          {
-            listSeller.map(({ name }) => (
-              <option key={ name } value={ name }>
-                { name }
-              </option>
-            ))
-          }
-        </select>
-        <span>Endereço</span>
-        <input
-          data-testid="customer_checkout__input-address"
-          type="text"
-          value={ address }
-          onChange={ ({ target: { value } }) => setAddress(value) }
-        />
-        <span>Número</span>
-        <input
-          data-testid="customer_checkout__input-address-number"
-          type="number"
-          value={ numberAddress }
-          onChange={ ({ target: { value } }) => setNumberAddress(value) }
-        />
-        <input type="button" value="Finalizar Pedido" />
-      </fieldset>
-      <span>
-        { seller }
-      </span>
-    </>
+      <CardOrders
+        cart={ cart }
+        cartTotalPrice={ cartTotalPrice }
+        createListTable={ createListTable }
+      />
+      <CardAdressDetails
+        cart={ cart }
+        cartTotalPrice={ cartTotalPrice }
+      />
+    </div>
   );
 }
-
 export default Checkout;
+
+// TODO: remover por quantidade, um de cada vez
+// TODO: pegar compras do carrinho local
+// id do seller - CardAdressDetails
+// 201 - Created com retorno de id da compra

@@ -4,10 +4,7 @@ import DetailsHeader from '../components/DetailsHeader';
 import OrderedProductsDetails from '../components/OrderedProductsDetails';
 import { request, setToken } from '../services/requests';
 import Navbar from '../components/Navbar';
-
-const dataTestIds = {
-  totalPrice: 'seller_order_details__element-order-total-price',
-};
+import dataTestIds from '../utils/dataTestIds';
 
 const tableHeaderCols = [
   'Item',

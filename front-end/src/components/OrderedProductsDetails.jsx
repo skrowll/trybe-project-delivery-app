@@ -1,12 +1,5 @@
 import PropTypes from 'prop-types';
-
-const dataTestIds = {
-  itemNumber: 'seller_order_details__element-order-table-item-number-',
-  tableName: 'seller_order_details__element-order-table-name-',
-  tableQuantity: 'seller_order_details__element-order-table-quantity-',
-  unitPrice: 'seller_order_details__element-order-table-unit-price-',
-  subTotal: 'seller_order_details__element-order-table-sub-total-',
-};
+import dataTestIds from '../utils/dataTestIds';
 
 function OrderedProductsDetails({ product }) {
   const { id, name, salesProducts: { quantity }, price } = product;

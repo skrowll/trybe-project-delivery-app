@@ -18,7 +18,7 @@ function DetailsHeader({ order, role }) {
       }
     >
       <span data-testid={ dataTestIds.orderId }>{ `Pedido ${id}` }</span>
-      { role === 'customer' && <span>{seller?.name}</span> }
+      { role === 'customer' && <span>{seller?.name}</span>}
       <span data-testid={ dataTestIds.orderDate }>{ date }</span>
       <span data-testid={ dataTestIds.deliveryStatus }>{ status }</span>
       <span>

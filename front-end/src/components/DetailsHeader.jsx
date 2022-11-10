@@ -18,7 +18,7 @@ function DetailsHeader({ order, role }) {
       }
     >
       <span data-testid={ dataTestIds.orderId }>{ `Pedido ${id}` }</span>
-      { role === 'customer' && <span>{seller.name}</span>}
+      { role === 'customer' && <span>{seller?.name}</span> }
       <span data-testid={ dataTestIds.orderDate }>{ date }</span>
       <span data-testid={ dataTestIds.deliveryStatus }>{ status }</span>
       <span>
@@ -26,7 +26,7 @@ function DetailsHeader({ order, role }) {
           type="button"
           data-testid={ dataTestIds.preparingCheck }
         >
-          PREPARAR PEDIDO
+          {role === 'customer' ? 'ENTREGUE' : 'PREPARAR PEDIDO'}
         </button>
       </span>
       <span>
@@ -34,7 +34,7 @@ function DetailsHeader({ order, role }) {
           type="button"
           data-testid={ dataTestIds.dispatchCheck }
         >
-          SAIU PARA ENTREGA
+          {role === 'customer' ? 'MARCAR COMO ENTREGUE' : 'SAIU PARA ENTREGA'}
         </button>
       </span>
     </header>

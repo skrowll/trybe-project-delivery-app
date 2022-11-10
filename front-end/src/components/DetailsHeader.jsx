@@ -8,7 +8,7 @@ const dataTestIds = {
   dispatchCheck: 'seller_order_details__button-dispatch-check',
 };
 
-function OrderDetailsHeader({ order, role }) {
+function DetailsHeader({ order, role }) {
   const { id, saleDate, status } = order;
 
   const date = new Date(saleDate).toLocaleDateString();
@@ -17,9 +17,11 @@ function OrderDetailsHeader({ order, role }) {
     <header
       style={
         { display: 'flex',
+          borderBottom: '2px solid lightgray',
           justifyContent: 'space-between',
           width: '90%',
-          margin: '0 auto' }
+          padding: '10px',
+          margin: '0 auto 10px' }
       }
     >
       <span data-testid={ dataTestIds.orderId }>{ `Pedido ${id}` }</span>
@@ -46,7 +48,7 @@ function OrderDetailsHeader({ order, role }) {
   );
 }
 
-OrderDetailsHeader.propTypes = {
+DetailsHeader.propTypes = {
   order: PropTypes.shape({
     id: PropTypes.number,
     saleDate: PropTypes.string,
@@ -55,4 +57,4 @@ OrderDetailsHeader.propTypes = {
   role: PropTypes.string.isRequired,
 };
 
-export default OrderDetailsHeader;
+export default DetailsHeader;

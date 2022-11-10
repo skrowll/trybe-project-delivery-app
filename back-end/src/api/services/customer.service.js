@@ -23,7 +23,6 @@ const createOrder = async ({ sale, cart }, userId) => {
 
     return order;
   });
-
   return newSale.id;
 };
 

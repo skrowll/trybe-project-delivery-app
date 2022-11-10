@@ -1,6 +1,5 @@
 const express = require('express');
 const CustomerController = require('../controllers/customer.controller');
-const auth = require('../middlewares/customer.middleware');
 
 const customer = express();
 

@@ -20,12 +20,6 @@ const getOrders = async (req, res) => {
   return res.status(HttpStatus.OK).json(orders);
 };
 
-const getOrders = async (_req, res) => {
-  const userId = res.locals.user.id;
-  const orders = await customerService.getOrders(userId);
-  return res.status(HttpStatus.OK).json(orders);
-};
-
 const getOrderById = async (req, res) => {
   const { id } = req.params;
   const order = await customerService.getOrderById(id);

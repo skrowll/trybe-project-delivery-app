@@ -9,7 +9,8 @@ const customerPath = async (_req, res) => {
 
 const createOrder = async (req, res) => {
   const saleInfo = req.body;
-  const order = await customerService.createOrder(saleInfo);
+  const userId = res.locals.user.id;
+  const order = await customerService.createOrder(saleInfo, userId);
 
   return res.status(HttpStatus.CREATED).json(order);
 };

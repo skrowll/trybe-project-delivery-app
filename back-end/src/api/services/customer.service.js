@@ -11,9 +11,9 @@ const customerPath = async () => {
   return getProducts;
 };
 
-const createOrder = async ({ sale, cart }) => {
+const createOrder = async ({ sale, cart }, userId) => {
   const newSale = await sequelize.transaction(async (transaction) => {
-    const order = await sales.create(sale, { transaction });
+    const order = await sales.create({ ...sale, userId }, { transaction });
 
     const saleProduct = await cart.map((p) => (
       { saleId: order.id, productId: p.id, quantity: p.quantity }
@@ -22,7 +22,6 @@ const createOrder = async ({ sale, cart }) => {
     await salesProducts.bulkCreate(saleProduct, { transaction });
 
     return order;
-
   });
 
   return newSale.id;

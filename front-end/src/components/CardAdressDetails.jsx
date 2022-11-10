@@ -1,7 +1,7 @@
 import propTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { request } from '../services/requests';
+import { request, setToken } from '../services/requests';
 
 function CardAdressDetails({ cart, cartTotalPrice }) {
   const navigate = useNavigate();
@@ -9,24 +9,24 @@ function CardAdressDetails({ cart, cartTotalPrice }) {
   const [sellerId, setSellerId] = useState('');
   const [number, setNumberAddress] = useState(0);
   const [listSeller, setListSeller] = useState([]);
+  const { token } = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => request('get', '/user?role=seller')
     .then((data) => {
       setListSeller(data.map((e) => e));
-    }));
+    }), []);
 
   const submitCheckout = async () => {
-    const user = JSON.parse(localStorage.getItem('user'));
     const checkout = {
       sale: {
         sellerId,
-        userId: user.id,
         totalPrice: cartTotalPrice,
         deliveryAddress: address,
         deliveryNumber: Number(number),
       },
       cart,
     };
+    setToken(token);
     const order = await request('post', '/customer/checkout', checkout);
     navigate(`/customer/orders/${order}`);
     // TODO: autorização mesmo depois de atualizar página
@@ -41,7 +41,7 @@ function CardAdressDetails({ cart, cartTotalPrice }) {
           id="sellers"
           name="sellers"
           data-testid="customer_checkout__select-seller"
-          onClick={ ({ target: { value } }) => setSellerId(value) }
+          onChange={ ({ target: { value } }) => setSellerId(value) }
         >
           <option>Selecione</option>
           {listSeller.length > 0

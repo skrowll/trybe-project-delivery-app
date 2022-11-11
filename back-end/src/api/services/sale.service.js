@@ -27,7 +27,7 @@ const getSaleById = async ({ id }) => {
 };
 
 const updateStatus = async (id, status) => {
-  const sale = await sales.update({status}, { where: { id } });
+  const sale = await sales.update({ status }, { where: { id } });
 
   if (!sale) {
     throw new Error('Sale not found', { cause: { status: HttpStatus.NOT_FOUND } });

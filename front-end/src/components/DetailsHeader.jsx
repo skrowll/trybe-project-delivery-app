@@ -1,10 +1,18 @@
 import PropTypes from 'prop-types';
+import { request, setToken } from '../services/requests';
 import dataTestIds from '../utils/dataTestIds';
 
 function DetailsHeader({ order, role }) {
   const { id, saleDate, status, seller } = order;
 
   const date = new Date(saleDate).toLocaleDateString();
+
+  const updateStatus = async (newStatus) => {
+    const { token } = JSON.parse(localStorage.getItem('user'));
+    setToken(token);
+    await request('patch', `/seller/orders/${id}`, { status: newStatus });
+    // window.location.reload(true);
+  };
 
   return (
     <header
@@ -36,6 +44,7 @@ function DetailsHeader({ order, role }) {
                 type="button"
                 data-testid="customer_order_details__button-delivery-check"
                 disabled={ status !== 'Em Trânsito' }
+                onClick={ () => updateStatus('Entregue') }
               >
                 MARCAR COMO ENTREGUE
               </button>
@@ -48,6 +57,7 @@ function DetailsHeader({ order, role }) {
                   type="button"
                   data-testid={ `${role}${dataTestIds.preparingCheck}` }
                   disabled={ status !== 'Pendente' }
+                  onClick={ () => updateStatus('Preparando') }
                 >
                   PREPARAR PEDIDO
                 </button>
@@ -57,6 +67,7 @@ function DetailsHeader({ order, role }) {
                   type="button"
                   data-testid={ `${role}${dataTestIds.dispatchCheck}` }
                   disabled={ status !== 'Preparando' }
+                  onClick={ () => updateStatus('Em Trânsito') }
                 >
                   SAIU PARA ENTREGA
                 </button>

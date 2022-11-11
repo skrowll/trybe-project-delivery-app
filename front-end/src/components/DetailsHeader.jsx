@@ -18,25 +18,52 @@ function DetailsHeader({ order, role }) {
       }
     >
       <span data-testid={ `${role}${dataTestIds.orderId}` }>{ `Pedido ${id}` }</span>
-      { role === 'customer' && <span>{seller?.name}</span>}
+      { role === 'customer'
+        && (
+          <span
+            data-testid="customer_order_details__element-order-details-label-seller-name"
+          >
+            {seller?.name}
+          </span>
+        )}
       <span data-testid={ `${role}${dataTestIds.orderDate}` }>{ date }</span>
       <span data-testid={ `${role}${dataTestIds.deliveryStatus}` }>{ status }</span>
-      <span>
-        <button
-          type="button"
-          data-testid={ `${role}${dataTestIds.preparingCheck}` }
-        >
-          {role === 'customer' ? 'ENTREGUE' : 'PREPARAR PEDIDO'}
-        </button>
-      </span>
-      <span>
-        <button
-          type="button"
-          data-testid={ `${role}${dataTestIds.dispatchCheck}` }
-        >
-          {role === 'customer' ? 'MARCAR COMO ENTREGUE' : 'SAIU PARA ENTREGA'}
-        </button>
-      </span>
+      {
+        role === 'customer'
+          ? (
+            <span>
+              <button
+                type="button"
+                data-testid="customer_order_details__button-delivery-check"
+                disabled={ status !== 'Em Trânsito' }
+              >
+                MARCAR COMO ENTREGUE
+              </button>
+            </span>
+          )
+          : (
+            <div>
+              <span>
+                <button
+                  type="button"
+                  data-testid={ `${role}${dataTestIds.preparingCheck}` }
+                  disabled={ status !== 'Pendente' }
+                >
+                  PREPARAR PEDIDO
+                </button>
+              </span>
+              <span>
+                <button
+                  type="button"
+                  data-testid={ `${role}${dataTestIds.dispatchCheck}` }
+                  disabled={ status !== 'Preparando' }
+                >
+                  SAIU PARA ENTREGA
+                </button>
+              </span>
+            </div>
+          )
+      }
     </header>
   );
 }

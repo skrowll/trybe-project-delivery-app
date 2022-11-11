@@ -23,7 +23,7 @@ function OrderCard({ order, role }) {
       <div>
         <p data-testid={ `customer_orders__element-order-date-${id}` }>{ date }</p>
         <p data-testid={ `customer_orders__element-card-price-${id}` }>
-          { `R$ ${Number(totalPrice)}` }
+          { Number(totalPrice).toFixed(2).replace('.', ',') }
         </p>
       </div>
       { role === 'seller'

@@ -17,14 +17,14 @@ function DetailsHeader({ order, role }) {
           margin: '0 auto 10px' }
       }
     >
-      <span data-testid={ dataTestIds.orderId }>{ `Pedido ${id}` }</span>
+      <span data-testid={ `${role}${dataTestIds.orderId}` }>{ `Pedido ${id}` }</span>
       { role === 'customer' && <span>{seller?.name}</span>}
-      <span data-testid={ dataTestIds.orderDate }>{ date }</span>
-      <span data-testid={ dataTestIds.deliveryStatus }>{ status }</span>
+      <span data-testid={ `${role}${dataTestIds.orderDate}` }>{ date }</span>
+      <span data-testid={ `${role}${dataTestIds.deliveryStatus}` }>{ status }</span>
       <span>
         <button
           type="button"
-          data-testid={ dataTestIds.preparingCheck }
+          data-testid={ `${role}${dataTestIds.preparingCheck}` }
         >
           {role === 'customer' ? 'ENTREGUE' : 'PREPARAR PEDIDO'}
         </button>
@@ -32,7 +32,7 @@ function DetailsHeader({ order, role }) {
       <span>
         <button
           type="button"
-          data-testid={ dataTestIds.dispatchCheck }
+          data-testid={ `${role}${dataTestIds.dispatchCheck}` }
         >
           {role === 'customer' ? 'MARCAR COMO ENTREGUE' : 'SAIU PARA ENTREGA'}
         </button>

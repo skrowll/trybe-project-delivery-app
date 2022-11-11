@@ -26,4 +26,14 @@ const getSaleById = async ({ id }) => {
   return sale;
 };
 
-module.exports = { getSalesBySellerId, getSaleById };
+const updateStatus = async (id, status) => {
+  const sale = await sales.update({status}, { where: { id } });
+
+  if (!sale) {
+    throw new Error('Sale not found', { cause: { status: HttpStatus.NOT_FOUND } });
+  }
+
+  return { message: 'updated' };
+};
+
+module.exports = { getSalesBySellerId, getSaleById, updateStatus };

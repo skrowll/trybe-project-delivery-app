@@ -53,7 +53,7 @@ function Details() {
         </table>
         <div>
           <span
-            data-testid={ dataTestIds.totalPrice }
+            data-testid={ `${role}${dataTestIds.totalPrice}` }
           >
             { `R$ ${Number(order.totalPrice).toFixed(2).replace('.', ',')}` }
           </span>

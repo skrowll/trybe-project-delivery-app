@@ -8,7 +8,6 @@ import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import Details from './pages/Details';
 import PrivateRoute from './components/PrivateRoute';
-import './App.css';
 
 function App() {
   return (
